@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Serif+SC:wght@400;500;700&family=EB+Garamond:wght@500&display=swap" crossorigin="" />
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    .ellia-suggestion-save-box {
+      --paper: #fbf6ea;
+      --paper-deep: #efe4cc;
+      --ink: #4c3340;
+      --muted: #8b6d73;
+      --red: #9b2748;
+      --red-deep: #5c1430;
+      --gold: #c6a45b;
+      position: relative;
+      box-sizing: border-box;
+      width: min(100%, 720px);
+      margin: 24px auto;
+      padding: 22px 24px 18px 90px;
+      overflow: hidden;
+      border: 1px solid rgba(198, 164, 91, .72);
+      border-radius: 6px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, .72), rgba(255, 255, 255, 0) 34%),
+        radial-gradient(circle at 88% 8%, rgba(155, 39, 72, .16), transparent 30%),
+        var(--paper);
+      box-shadow: 0 14px 34px rgba(26, 13, 22, .28), inset 0 0 0 1px rgba(255, 255, 255, .56);
+      color: var(--ink);
+      font-family: 'Noto Serif SC', 'EB Garamond', serif;
+      isolation: isolate;
+    }
+
+    .ellia-suggestion-save-box::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      z-index: -1;
+      border: 1px solid rgba(198, 164, 91, .42);
+      border-radius: 3px;
+      pointer-events: none;
+    }
+
+    .ellia-suggestion-save-box::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      opacity: .42;
+      background-image:
+        repeating-linear-gradient(90deg, rgba(92, 20, 48, .05) 0 1px, transparent 1px 12px),
+        repeating-linear-gradient(0deg, rgba(198, 164, 91, .08) 0 1px, transparent 1px 18px);
+      pointer-events: none;
+    }
+
+    .ellia-suggestion-save-stub {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 64px;
+      border-right: 1px dashed rgba(92, 20, 48, .36);
+      background:
+        linear-gradient(180deg, rgba(155, 39, 72, .95), rgba(92, 20, 48, .96)),
+        var(--red);
+      color: #fff7ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ellia-suggestion-save-stub span {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    .ellia-suggestion-save-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid rgba(198, 164, 91, .72);
+    }
+
+    .ellia-suggestion-save-kicker {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .22em;
+      color: var(--red);
+      text-transform: uppercase;
+    }
+
+    .ellia-suggestion-save-title {
+      margin-top: 3px;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .ellia-suggestion-save-cost {
+      flex: 0 0 auto;
+      min-width: 72px;
+      padding: 6px 8px;
+      border: 1px solid rgba(155, 39, 72, .48);
+      color: var(--red-deep);
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-align: center;
+      transform: rotate(3deg);
+      background: rgba(255, 255, 255, .42);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .34);
+    }
+
+    .ellia-suggestion-save-label {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .ellia-suggestion-save-text {
+      margin: 0;
+      padding: 14px 16px;
+      min-height: 56px;
+      border-left: 4px solid var(--red);
+      background: rgba(255, 255, 255, .46);
+      color: var(--ink);
+      font: inherit;
+      font-size: 15px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .ellia-suggestion-save-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .ellia-suggestion-save-button {
+      min-height: 34px;
+      padding: 0 15px;
+      border: 1px solid rgba(92, 20, 48, .7);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #a93558, #711a39);
+      color: #fff7ed;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(92, 20, 48, .26), inset 0 1px 0 rgba(255, 255, 255, .24);
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    .ellia-suggestion-save-button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+      box-shadow: 0 12px 24px rgba(92, 20, 48, .32), inset 0 1px 0 rgba(255, 255, 255, .28);
+    }
+
+    .ellia-suggestion-save-button:disabled {
+      cursor: default;
+      opacity: .58;
+      box-shadow: none;
+    }
+
+    .ellia-suggestion-save-status {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .ellia-suggestion-save-box.is-error .ellia-suggestion-save-status {
+      color: #9b2748;
+      font-weight: 700;
+    }
+
+    .ellia-suggestion-save-box.is-saved .ellia-suggestion-save-status {
+      color: #496b38;
+      font-weight: 700;
+    }
+
+    @media (max-width: 560px) {
+      .ellia-suggestion-save-box {
+        margin: 18px auto;
+        padding: 78px 16px 16px;
+      }
+
+      .ellia-suggestion-save-stub {
+        inset: 0 0 auto 0;
+        width: auto;
+        height: 52px;
+        border-right: 0;
+        border-bottom: 1px dashed rgba(92, 20, 48, .36);
+      }
+
+      .ellia-suggestion-save-stub span {
+        writing-mode: horizontal-tb;
+        transform: none;
+      }
+
+      .ellia-suggestion-save-head {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="ellia-suggestion-save-box">
+    <div class="ellia-suggestion-save-stub"><span>Rote Blume</span></div>
+    <div class="ellia-suggestion-save-head">
+      <div>
+        <div class="ellia-suggestion-save-kicker">custom storytone</div>
+        <div class="ellia-suggestion-save-title">艾莉亚整理出的故事风格</div>
+      </div>
+      <div class="ellia-suggestion-save-cost">100 FP</div>
+    </div>
+    <div class="ellia-suggestion-save-label">候选内容</div>
+    <pre class="ellia-suggestion-save-text">$1</pre>
+    <div class="ellia-suggestion-save-actions">
+      <button type="button" class="ellia-suggestion-save-button">保存并消耗 100FP</button>
+      <span class="ellia-suggestion-save-status"></span>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    const helper = window.TavernHelper || window.parent?.TavernHelper || window;
+    const root = document.querySelector('.ellia-suggestion-save-box');
+    if (!root || !helper?.getVariables || !helper?.replaceVariables) return;
+
+    const COST = 100;
+    const SUGGESTION_MARKER = '[viva la vida]';
+    const rawSuggestion = String(root.querySelector('.ellia-suggestion-save-text')?.textContent || '').replace(/\r/g, '');
+    const markerIndex = rawSuggestion.indexOf(SUGGESTION_MARKER);
+    const tone = (markerIndex === -1 ? '' : rawSuggestion.slice(markerIndex + SUGGESTION_MARKER.length))
+      .replace(/[\r\n<>]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 80);
+
+    const fpPaths = [
+      'stat_data.主角.FP',
+      'stat_data.主角.fp',
+      'stat_data.主角.命运点数',
+      'stat_data.主角.命运点数(FP)',
+      'stat_data.主角.命运点数fp',
+      'stat_data.FP',
+      'stat_data.fp',
+      'stat_data.命运点数',
+      '主角.FP',
+      '主角.fp',
+      '主角.命运点数',
+      'FP',
+      'fp',
+      '命运点数',
+    ];
+
+    const button = root.querySelector('.ellia-suggestion-save-button');
+    const status = root.querySelector('.ellia-suggestion-save-status');
+    const text = root.querySelector('.ellia-suggestion-save-text');
+    const setStatus = (message, state = '') => {
+      if (status) status.textContent = message;
+      root.classList.toggle('is-error', state === 'error');
+      root.classList.toggle('is-saved', state === 'saved');
+    };
+    if (text) text.textContent = tone || rawSuggestion.trim();
+
+    if (markerIndex === -1) {
+      if (button) button.disabled = true;
+      setStatus(`未检测到 ${SUGGESTION_MARKER}。`, 'error');
+    }
+
+    const getPath = (obj, path) =>
+      path.split('.').reduce((value, key) => (value && typeof value === 'object' ? value[key] : undefined), obj);
+
+    const setPath = (obj, path, value) => {
+      const parts = path.split('.');
+      let current = obj;
+      for (const key of parts.slice(0, -1)) {
+        if (!current[key] || typeof current[key] !== 'object') current[key] = {};
+        current = current[key];
+      }
+      current[parts.at(-1)] = value;
+    };
+
+    const parseFp = value => {
+      if (typeof value === 'number' && Number.isFinite(value)) return value;
+      if (typeof value === 'string') {
+        const match = value.match(/-?\d+(?:\.\d+)?/);
+        if (match) return Number(match[0]);
+      }
+      return null;
+    };
+
+    const findFp = vars => {
+      for (const path of fpPaths) {
+        const value = parseFp(getPath(vars, path));
+        if (value !== null && Number.isFinite(value)) return { path, value };
+      }
+      return null;
+    };
+
+    const getPromptInput = () => {
+      const doc = window.parent?.document || document;
+      const selectors = [
+        '#send_textarea',
+        'textarea#send_textarea',
+        'textarea[name="send_textarea"]',
+        '#message_textarea',
+        'textarea',
+        '[contenteditable="true"]',
+      ];
+      for (const selector of selectors) {
+        const element = doc.querySelector(selector);
+        if (element && element.nodeType === 1) {
+          return element;
+        }
+      }
+      return null;
+    };
+
+    const insertIntoPromptInput = value => {
+      const input = getPromptInput();
+      if (!input) return false;
+
+      const tagName = String(input.tagName || '').toLowerCase();
+      if (tagName === 'textarea' || tagName === 'input') {
+        const current = input.value.trimEnd();
+        input.value = current ? `${current}\n${value}` : value;
+      } else {
+        const current = (input.textContent || '').trimEnd();
+        input.textContent = current ? `${current}\n${value}` : value;
+      }
+
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      input.focus();
+      return true;
+    };
+
+    const buildReminderText = value => {
+      const safeTone = value.replace(/"/g, "'");
+      return `[Reminder_Rote Blume] 用户已設定自定义故事风格: "${safeTone}"`;
+    };
+
+    button?.addEventListener('click', () => {
+      if (!tone) {
+        setStatus(markerIndex === -1 ? `未检测到 ${SUGGESTION_MARKER}。` : '候选内容为空。', 'error');
+        return;
+      }
+
+      const messageVars = helper.getVariables({ type: 'message', message_id: 'latest' }) || {};
+      const fp = findFp(messageVars);
+      if (!fp) {
+        setStatus('未找到 FP 变量。', 'error');
+        return;
+      }
+      if (fp.value < COST) {
+        setStatus(`FP 不足：当前 ${fp.value}，需要 ${COST}。`, 'error');
+        return;
+      }
+
+      setPath(messageVars, fp.path, fp.value - COST);
+      helper.replaceVariables(messageVars, { type: 'message', message_id: 'latest' });
+
+      const chatVars = helper.getVariables({ type: 'chat' }) || {};
+      setPath(chatVars, 'dialog_beauty.story.skill4', 'CUSTOM');
+      setPath(chatVars, 'dialog_beauty.story.skill4Custom', tone);
+      setPath(chatVars, 'dialog_beauty.story.skill4Request', false);
+      helper.replaceVariables(chatVars, { type: 'chat' });
+
+      button.disabled = true;
+      button.textContent = '已保存';
+      const inserted = insertIntoPromptInput(buildReminderText(tone));
+      setStatus(inserted ? `已保存，剩余 ${fp.value - COST} FP；已写入输入框。` : `已保存，剩余 ${fp.value - COST} FP；但未找到输入框。`, 'saved');
+    });
+  })();
+  </script>
+</body>
+</html>
