@@ -1,0 +1,194 @@
+import type {
+  FontMode,
+  FormType,
+  RhythmProfile,
+  SettingsSectionMeta,
+  SkillMode,
+  StorySkillKey,
+  StoryStyleMode,
+  TypewriterSpeed,
+} from './types';
+
+export const BASE_RHYTHM: RhythmProfile = {
+  baseAdvance: 0.032,
+  actionAdvance: 0.032,
+  lineGap: 0.08,
+  punctuation: {
+    comma: 0,
+    period: 0,
+    question: 0,
+    exclaim: 0,
+    colon: 0,
+  },
+  ellipsis: {
+    dotAdvance: 0.09,
+    dotDuration: 0.08,
+    dotHold: 0.01,
+    tailPause: 0.18,
+    dotFromY: 3,
+    dotFromScale: 0.92,
+  },
+  phrase: {
+    slowLeadAdvance: 0.032,
+    slowLeadDuration: 0.08,
+    slowLeadHold: 0.04,
+    fastLeadAdvance: 0.032,
+    fastLeadDuration: 0.08,
+    softAdvance: 0.032,
+    softDuration: 0.08,
+    tailPause: 0.07,
+    particleTailPause: 0.04,
+  },
+};
+
+export const PHRASE_PATTERNS = [
+  '嗯哼？',
+  '嗯哼?',
+  '诶嘿',
+  '啊...',
+  '啊……',
+  '嗯...',
+  '嗯……',
+  '呃...',
+  '呃……',
+  '噢...',
+  '噢……',
+  '嗯？',
+  '嗯?',
+  '啊？',
+  '啊?',
+  '噢？',
+  '噢?',
+  '诶？',
+  '诶?',
+  '嘿？',
+  '嘿?',
+] as const;
+
+export const FONT_MODES: FontMode[] = ['A', 'B', 'C', 'D', 'E'];
+export const FORM_TYPES: FormType[] = ['A', 'B', 'C'];
+export const SKILL_MODES: SkillMode[] = ['A', 'B', 'C'];
+export const STORY_STYLE_MODES: StoryStyleMode[] = [
+  'WORLD',
+  'HAPPY_ADVENTURE',
+  'JAPANESE_SHONEN',
+  'NEW WEIRD',
+  'SLICE_OF_LIFE',
+  'CUSTOM',
+];
+export const TYPEWRITER_SPEEDS: TypewriterSpeed[] = ['disable', 'normal', 'fast'];
+
+export const GLOBAL_SETTINGS_PATH = 'dialog_beauty.ui';
+export const CHAT_SETTINGS_PATH = 'dialog_beauty.story';
+export const SETTINGS_SYNC_EVENT = 'dialog_beauty_settings_sync';
+export const STORY_TONE_COST = 100;
+export const ROTE_REQUEST_HEADER = '[Request_Rote Blume]';
+export const ROTE_REMINDER_HEADER = '[Reminder_Rote Blume]';
+
+export const FP_PATH_CANDIDATES = [
+  'stat_data.主角.FP',
+  'stat_data.主角.fp',
+  'stat_data.主角.命运点数',
+  'stat_data.主角.命运点数(FP)',
+  'stat_data.主角.命运点数fp',
+  'stat_data.FP',
+  'stat_data.fp',
+  'stat_data.命运点数',
+  '主角.FP',
+  '主角.fp',
+  '主角.命运点数',
+  'FP',
+  'fp',
+  '命运点数',
+] as const;
+
+export const fontOptions: Array<{ value: FontMode; label: string }> = [
+  { value: 'A', label: 'A / Sthginkra' },
+  { value: 'B', label: 'B / Yomeng' },
+  { value: 'C', label: 'C / 真楷' },
+  { value: 'D', label: 'D / Xiaolai' },
+  { value: 'E', label: 'E / 麦圆' },
+];
+
+export const formTypeOptions: Array<{ value: FormType; label: string }> = [
+  { value: 'A', label: '实体化' },
+  { value: 'B', label: '灵体化' },
+  { value: 'C', label: '噤默化' },
+];
+
+export const skillOptionGroups: Record<StorySkillKey, Array<{ value: SkillMode; label: string }>> = {
+  skill1: [
+    { value: 'A', label: '关闭技能1' },
+    { value: 'B', label: '独一无二' },
+    { value: 'C', label: '大千世界的你与我 / 仅限今生的我与你' },
+  ],
+  skill2: [
+    { value: 'A', label: '关闭技能2' },
+    { value: 'B', label: '不止于此' },
+    { value: 'C', label: '步履不停 / 瓮、星屑、步伐' },
+  ],
+  skill3: [
+    { value: 'B', label: '您的故事' },
+    { value: 'C', label: '关闭您的故事' },
+  ],
+};
+
+export const blueStoryStyleOptions: Array<{ value: Exclude<StoryStyleMode, 'WORLD' | 'CUSTOM'>; label: string }> = [
+  { value: 'HAPPY_ADVENTURE', label: '欢乐向冒险' },
+  { value: 'JAPANESE_SHONEN', label: '日式王道' },
+  { value: 'NEW WEIRD', label: '诡谲探灵' },
+  { value: 'SLICE_OF_LIFE', label: '平淡日常' },
+];
+
+export const typewriterSpeedOptions: Array<{ value: TypewriterSpeed; label: string }> = [
+  { value: 'disable', label: 'Disable' },
+  { value: 'normal', label: 'Normal' },
+  { value: 'fast', label: 'Fast' },
+];
+
+export const elliaFormLabels: Record<FormType, string> = {
+  A: '实体化',
+  B: '灵体化',
+  C: '噤默化',
+};
+
+export const elliaFormStatusPath = ['stat_data', '关系列表', '艾莉亚', '技能', '在您眼里', '效果', '当前状态'] as const;
+
+export const settingsSections: SettingsSectionMeta[] = [
+  {
+    key: 'skill1',
+    title: '关于第一个技能组',
+    glyph: '🔮',
+    motif: '水晶球',
+    subtitle: 'FIRST SKILL SLOT',
+    summary: '快速触发与即时切换',
+    intro: '水晶球会先回应最直接的呼唤。这里处理快速触发与技能1的即时切换。',
+  },
+  {
+    key: 'skill2',
+    title: '关于第二个技能组',
+    glyph: '🃏',
+    motif: '塔罗牌',
+    subtitle: 'SECOND SKILL SLOT',
+    summary: '叙事能力与能力表现',
+    intro: '塔罗牌负责更偏叙事的一组控制，影响能力表现与故事调性。',
+  },
+  {
+    key: 'world',
+    title: '关于这个世界',
+    glyph: '✿',
+    motif: '花占卜',
+    subtitle: 'WORLD SETTINGS',
+    summary: '型态、故事与世界读取',
+    intro: '花占卜页记录艾莉亚在世界里的显现方式，并同步到可读取的变量中。',
+  },
+  {
+    key: 'beauty',
+    title: '关于您所见到的',
+    glyph: '◬',
+    motif: '碟仙',
+    subtitle: 'BEAUTY SETTINGS',
+    summary: '字体、动画与节奏',
+    intro: '碟仙页掌管眼前的展示层，让字体、动画与节奏保持统一。',
+  },
+];
