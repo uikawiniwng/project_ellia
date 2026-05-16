@@ -493,15 +493,36 @@
 
     .et-stamp-mark {
       position: absolute;
-      bottom: 5px;
-      right: 5px;
-      border: 1px solid var(--theme);
-      color: var(--theme);
+      right: 10px;
+      bottom: 8px;
+      border: 1px solid rgba(255, 224, 120, 0.9);
+      color: #fff7cf;
       font-size: 9px;
-      padding: 2px 4px;
+      letter-spacing: 0.8px;
+      padding: 2px 6px;
       transform: rotate(-10deg);
+      transform-origin: center;
       font-family: 'Oswald', sans-serif;
-      opacity: 0.6;
+      opacity: 0.92;
+      border-radius: 0;
+      background: linear-gradient(135deg, rgba(255, 213, 79, 0.14) 0%, rgba(255, 120, 214, 0.12) 52%, rgba(123, 247, 255, 0.16) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 0 8px rgba(255, 210, 120, 0.18), 0 0 14px rgba(123, 247, 255, 0.1);
+      backdrop-filter: blur(1.5px);
+      -webkit-backdrop-filter: blur(1.5px);
+      cursor: pointer;
+      user-select: none;
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease, opacity .2s ease;
+    }
+
+    .et-stamp-mark:hover {
+      transform: rotate(-10deg) translateY(-1px);
+      filter: brightness(1.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 10px rgba(255, 210, 120, 0.24), 0 0 18px rgba(123, 247, 255, 0.16);
+    }
+
+    .et-stamp-mark:active {
+      transform: rotate(-10deg) translateY(0);
+      filter: brightness(0.98);
     }
 
     .et-strip-bottom {
@@ -753,7 +774,8 @@
 
       const toast = root.querySelector('.et-import-toast-v9');
       const stamp = root.querySelector('.et-stamp-real-v9');
-      if (!stamp) return;
+      const fallbackButton = root.querySelector('.et-stamp-mark');
+      if (!stamp || !fallbackButton) return;
 
       const titleRaw = String('$1').trim();
       const colorRaw = String('$2').trim();
@@ -988,8 +1010,9 @@
         return alreadySaved ? 'already' : 'saved';
       };
 
-      stamp.title = messageId === null ? '无法识别当前楼层，暂不可保存' : `点击邮票保存车票记录到第 ${messageId} 楼`;
-      stamp.addEventListener('click', async event => {
+      stamp.title = 'Fold/Unfold';
+      fallbackButton.title = messageId === null ? '无法识别当前楼层，暂不可保存' : `点击 OBSERVED 保存车票记录到第 ${messageId} 楼`;
+      fallbackButton.addEventListener('click', async event => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -1001,8 +1024,9 @@
           const backpackResult = await saveBackpackTicket();
           const calendarResult = await saveCalendarTicket();
           const alreadySaved = backpackResult === 'already' && calendarResult === 'already';
-          stamp.dataset.ticketSaved = 'true';
-          stamp.title = '该车票已保存';
+          fallbackButton.dataset.ticketSaved = 'true';
+          fallbackButton.textContent = 'ARCHIVED';
+          fallbackButton.title = '该车票已保存';
           showToast(alreadySaved ? '该车票已保存' : '保存成功', alreadySaved ? 'info' : 'success');
         } catch (error) {
           console.error('Ticket Stamp Save Error:', error);

@@ -264,7 +264,7 @@ _%>
               效果:
                 - 艾莉亚会根据当前氛围生成一张名为 "Tu， was du willst" 的旅途车票
                 - 核心指令: 必须严格输出以下 Raw Text 格式以触发正则渲染，**绝对禁止**生成任何代码块包裹：
-                - 强制输出格式: [Ticket:Tu， was du willst] Title:: ${动态标题} Color:: ${十六进制颜色代码} Date:: ${当前时间} Place:: ${当前地点} Macro:: ${宏观素描内容} Micro:: ${奇观特写内容} Story:: ${故事之种内容} [/Ticket]
+                - 强制输出格式: [Ticket:Tu, was du willst] Title:: ${动态标题} Color:: ${十六进制颜色代码} Date:: ${当前时间} Place:: ${当前地点} Macro:: ${宏观素描内容} Micro:: ${奇观特写内容} Story:: ${故事之种内容} [/Ticket]
                 - 内容要求:
                     - Title: 格式为 "多么美妙的·${Xx}" (如：多么美妙的·凛冬)
                     - Color: 根据氛围选择 HEX 颜色 (如 冰雪#6FA8DC， 森林#5F8D4E，可读性优先:禁止生成高明度低饱和度(如纯白) HEX 颜色)
