@@ -6,4 +6,4 @@
 ## 当前模块
 
 - [车票技能](src/ticket_skill/README.md)
-- [对话美化](src/dialog_beauty/STRUCTURE.md)
+- [对话美化](src/dialog_beauty/README.md)
