@@ -102,6 +102,7 @@
         @update:story-style-diy-draft="storyStyleDiyDraft = $event"
         @set-animation-enabled="setAnimationEnabled"
         @set-typewriter-speed="setTypewriterSpeed"
+        @quick-reply="handleQuickReply"
       />
     </div>
   </div>
@@ -144,6 +145,13 @@ import type {
   StoryStyleMode,
   TypewriterSpeed,
 } from './types';
+
+type ToastHostWindow = Window &
+  typeof globalThis & {
+    toastr?: {
+      info?: (message: string) => void;
+    };
+  };
 
 const cards = ref<ElliaCard[]>([]);
 const uiSettings = ref<DialogBeautyUiSettings>(getDefaultUiSettings());
@@ -310,6 +318,11 @@ function setTypewriterSpeed(speed: TypewriterSpeed) {
       }
     });
   }
+}
+
+function handleQuickReply(text: string) {
+  const inserted = insertIntoPromptInput(text);
+  (window.parent as ToastHostWindow).toastr?.info?.(inserted ? `已写入输入框：${text}` : '未找到输入框');
 }
 
 function startCardFromControl(cardId: string) {

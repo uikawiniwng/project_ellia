@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>艾莉亚 - 技能美化测试 (精工边框 + 导航版)</title>
+<style>
+  /* 基础重置与深色背景 */
+  body {
+    background: radial-gradient(circle at 50% 0%, #2b1338 0%, #0a0310 100%);
+    color: #e5c7ff;
+    font-family: 'Noto Serif SC', serif;
+    margin: 0; 
+    padding: 3rem;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  /* =========================================
+     外壳容器
+     ========================================= */
+  .ellia-v2-ticket-shell {
+    display: flex; 
+    gap: 3rem;
+    width: 100%; 
+    max-width: 850px;
+    background: rgba(15, 8, 22, 0.85);
+    border: 1px solid rgba(155, 89, 182, 0.2);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 60px rgba(202, 164, 93, 0.03);
+    padding: 3.5rem 2.5rem 2.5rem 2.5rem; /* 顶部留足空间给导航 */
+    border-radius: 4px; 
+    position: relative;
+    backdrop-filter: blur(12px);
+  }
+
+  /* 精工内层极细金框 */
+  .ellia-inner-frame {
+    position: absolute;
+    inset: 14px; 
+    border: 1px solid rgba(202, 164, 93, 0.25);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* 四角发光锚点 */
+  .frame-dot {
+    position: absolute;
+    width: 4px; height: 4px;
+    background: #caa45d;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #caa45d, 0 0 15px rgba(202, 164, 93, 0.6);
+  }
+  .dot-tl { top: -2.5px; left: -2.5px; }
+  .dot-tr { top: -2.5px; right: -2.5px; }
+  .dot-bl { bottom: -2.5px; left: -2.5px; }
+  .dot-br { bottom: -2.5px; right: -2.5px; }
+
+  /* =========================================
+     顶部极简导航栏 (新加部分)
+     ========================================= */
+  .nav-btn {
+    position: absolute;
+    top: 1.2rem; /* 贴近内边框顶部 */
+    background: transparent;
+    border: none;
+    color: rgba(224, 176, 255, 0.5);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-btn:hover {
+    color: #caa45d;
+    text-shadow: 0 0 8px rgba(202, 164, 93, 0.6);
+  }
+
+  .nav-btn-left { left: 2.5rem; }
+  .nav-btn-right { right: 2.5rem; }
+
+  /* 悬停时的方向轻微推移效果 */
+  .nav-btn-left:hover { transform: translateX(-4px); }
+  .nav-btn-right:hover { transform: translateX(4px); }
+
+
+  /* =========================================
+     左侧：设置面板
+     ========================================= */
+  .ellia-pane-left { 
+    flex: 1; 
+    position: relative;
+    padding-right: 1.5rem; 
+    margin-top: 0.5rem; /* 微调与顶部的间距 */
+  }
+
+  /* 中间渐隐发光分割线 */
+  .ellia-pane-left::after {
+    content: "";
+    position: absolute;
+    right: -1.5rem; 
+    top: 5%;
+    bottom: 5%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(224, 176, 255, 0.25), transparent);
+  }
+
+  .ellia-v2-settings-title {
+    color: rgba(202, 164, 93, 0.7); 
+    font-size: 0.8rem; 
+    letter-spacing: 0.3em;
+    margin-bottom: 1.2rem; 
+    text-align: center;
+  }
+  
+  .ellia-v2-settings-options { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.4rem; 
+  }
+  
+  .ellia-v2-settings-option {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(224, 176, 255, 0.05);
+    color: rgba(240, 220, 252, 0.6);
+    padding: 0.8rem 1rem; 
+    font-size: 0.95rem;
+    text-align: center; 
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 20; 
+  }
+  
+  .ellia-v2-settings-option:hover {
+    color: #fff; 
+    text-shadow: 0 0 10px rgba(224, 176, 255, 0.8);
+    border-bottom-color: rgba(224, 176, 255, 0.3);
+  }
+  
+  .ellia-v2-settings-option.is-active {
+    color: #caa45d; 
+    text-shadow: 0 0 15px rgba(202, 164, 93, 0.6);
+    border-bottom: 1px solid rgba(202, 164, 93, 0.5);
+    background: radial-gradient(ellipse at bottom, rgba(202, 164, 93, 0.15) 0%, transparent 60%);
+  }
+  .ellia-v2-settings-option.is-active::before { content: "✦ "; font-size: 0.75rem; margin-right: 4px;}
+  .ellia-v2-settings-option.is-active::after { content: " ✦"; font-size: 0.75rem; margin-left: 4px;}
+
+  .quick-reply-btn:active {
+    background: rgba(224, 176, 255, 0.1);
+  }
+
+  .ellia-divider {
+    height: 1px; width: 100%; margin: 2rem 0;
+    background: linear-gradient(90deg, transparent, rgba(224, 176, 255, 0.25), transparent);
+  }
+
+  /* =========================================
+     右侧：介绍面板
+     ========================================= */
+  .ellia-pane-right { 
+    flex: 1; 
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+    margin-top: 0.5rem;
+  }
+
+  .ellia-v2-ticket-detail-title {
+    font-size: 1.2rem; 
+    color: #caa45d;
+    text-align: center; 
+    margin-bottom: 0.2rem;
+    text-shadow: 0 0 12px rgba(202, 164, 93, 0.4);
+    letter-spacing: 0.2em;
+  }
+
+  .ellia-v2-ticket-detail-subtitle {
+    font-size: 0.65rem;
+    color: rgba(224, 176, 255, 0.5);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .orb-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    z-index: 20;
+  }
+
+  .svg-orb {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 15px rgba(155, 89, 182, 0.4));
+    transition: filter 0.5s ease;
+  }
+
+  .orb-wrapper:hover .svg-orb {
+    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.5));
+  }
+
+  .astrolabe-group {
+    transform-origin: 140px 140px;
+    animation: slow-spin 40s linear infinite;
+  }
+
+  .orb-wrapper:hover .astrolabe-group {
+    animation: slow-spin 10s linear infinite;
+  }
+
+  .mist-layer {
+    transform-origin: 140px 140px;
+    animation: slow-spin-reverse 25s linear infinite;
+    transition: opacity 0.8s ease;
+  }
+
+  .orb-wrapper:hover .mist-layer {
+    opacity: 0.1;
+  }
+
+  @keyframes slow-spin { 100% { transform: rotate(360deg); } }
+  @keyframes slow-spin-reverse { 100% { transform: rotate(-360deg); } }
+
+  .flip-card-container {
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flip-card-container.is-turning {
+    transform: rotateX(90deg) scale(0.95);
+    opacity: 0;
+  }
+
+  .ellia-v2-flavor-text {
+    font-size: 1rem;
+    color: #e0b0ff;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 8px rgba(155, 89, 182, 0.6);
+    text-align: center;
+  }
+
+  .ellia-v2-ticket-detail-status {
+    width: 90%;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(202, 164, 93, 0.3);
+    text-align: center;
+    font-size: 0.8rem; 
+    color: #f1dcff;
+    line-height: 1.8;
+  }
+  .glow-text {
+    color: #caa45d;
+    text-shadow: 0 0 8px rgba(202, 164, 93, 0.8);
+    font-weight: bold;
+    padding: 0 4px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="ellia-v2-ticket-shell">
+    
+    <button class="nav-btn nav-btn-left" onclick="console.log('返回索引被点击')">← 返回索引</button>
+    <button class="nav-btn nav-btn-right" onclick="console.log('翻到下一页被点击')">翻到下一页 →</button>
+
+    <div class="ellia-inner-frame">
+      <div class="frame-dot dot-tl"></div>
+      <div class="frame-dot dot-tr"></div>
+      <div class="frame-dot dot-bl"></div>
+      <div class="frame-dot dot-br"></div>
+    </div>
+
+    <div class="ellia-pane-left">
+      <div class="ellia-v2-settings-title">FIRST SKILL SLOT</div>
+      <div class="ellia-v2-settings-options" id="skillGroup">
+        <button class="ellia-v2-settings-option" onclick="triggerAction(this, 'skill_off', false)">关闭技能 1</button>
+        <button class="ellia-v2-settings-option is-active" onclick="triggerAction(this, 'skill_unique', false)">独一无二</button>
+        <button class="ellia-v2-settings-option" onclick="triggerAction(this, 'skill_world', false)">大千世界的你与我</button>
+      </div>
+
+      <div class="ellia-divider"></div>
+
+      <div class="ellia-v2-settings-title">QUICK REPLY</div>
+      <div class="ellia-v2-settings-options">
+        <button class="ellia-v2-settings-option quick-reply-btn" onclick="triggerAction(this, 'qr_record', true)">记录你我的今生</button>
+        <button class="ellia-v2-settings-option quick-reply-btn" onclick="triggerAction(this, 'qr_gift', true)">收下我们的赠礼</button>
+      </div>
+    </div>
+
+    <div class="ellia-pane-right">
+      <div class="ellia-v2-ticket-detail-title">水晶球</div>
+      <div class="ellia-v2-ticket-detail-subtitle">Crystal Orb</div>
+      
+      <div class="orb-wrapper">
+        <svg class="svg-orb" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="glassBase" cx="50%" cy="50%" r="50%">
+              <stop offset="80%" stop-color="#140a20" stop-opacity="0.6"/>
+              <stop offset="95%" stop-color="#4a2366" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#d4af37" stop-opacity="0.5"/>
+            </radialGradient>
+            <radialGradient id="mistGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#9b59b6" stop-opacity="0.4"/>
+              <stop offset="60%" stop-color="#2c1040" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#000" stop-opacity="0.9"/>
+            </radialGradient>
+          </defs>
+          <circle cx="140" cy="140" r="130" fill="url(#glassBase)"/>
+          <g class="astrolabe-group">
+            <circle cx="140" cy="140" r="110" fill="none" stroke="#d4af37" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="2 6"/>
+            <path d="M140,40 L226,90 L226,190 L140,240 L54,190 L54,90 Z" fill="none" stroke="#d4af37" stroke-width="0.5" stroke-opacity="0.4"/>
+            <path d="M140,40 L140,240 M54,90 L226,190 M54,190 L226,90" stroke="#d4af37" stroke-width="0.5" stroke-opacity="0.2"/>
+            <circle cx="140" cy="140" r="3" fill="#fff" filter="drop-shadow(0 0 5px #fff)"/>
+          </g>
+          <circle cx="140" cy="140" r="128" fill="url(#mistGrad)" class="mist-layer"/>
+          <ellipse cx="100" cy="70" rx="40" ry="20" fill="rgba(255,255,255,0.15)" transform="rotate(-30 100 70)"/>
+        </svg>
+      </div>
+      
+      <div class="flip-card-container" id="dynamicContentCard">
+        <div class="ellia-v2-flavor-text" id="displayText">
+          「 预见命运的轨迹，唯你唯一 」
+        </div>
+        
+        <div class="ellia-v2-ticket-detail-status">
+          当前已启用 <span class="glow-text" id="displayStatus">独一无二</span><br>
+          <span style="opacity:0.4; font-size:0.7rem;">设定将保存为聊天变量供 EJS 读取</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const contentMap = {
+      'skill_off': { text: '「 水晶球已封存，命运沉寂 」', status: '关闭技能 1' },
+      'skill_unique': { text: '「 预见命运的轨迹，唯你唯一 」', status: '独一无二' },
+      'skill_world': { text: '「 拨开大千世界的迷雾 」', status: '大千世界的你与我' }
+    };
+
+    function triggerAction(element, actionKey, isQuickReply) {
+      if (isQuickReply) {
+        return; 
+      }
+      
+      const skillButtons = document.getElementById('skillGroup').querySelectorAll('.ellia-v2-settings-option');
+      skillButtons.forEach(btn => btn.classList.remove('is-active'));
+      element.classList.add('is-active');
+
+      const card = document.getElementById('dynamicContentCard');
+      const textEl = document.getElementById('displayText');
+      const statusEl = document.getElementById('displayStatus');
+
+      card.classList.add('is-turning');
+
+      setTimeout(() => {
+        const newData = contentMap[actionKey];
+        if(newData) {
+            textEl.innerText = newData.text;
+            statusEl.innerText = newData.status;
+        }
+      }, 300);
+
+      setTimeout(() => {
+        card.classList.remove('is-turning');
+      }, 400);
+    }
+  </script>
+</body>
+</html>
