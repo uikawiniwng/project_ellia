@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>艾莉亚 - 技能介绍页 (技能组3 & 4)</title>
+<style>
+  /* 基础重置与深色背景 */
+  body {
+    background: radial-gradient(circle at 50% 0%, #1e0d29 0%, #050108 100%);
+    color: #e5c7ff;
+    font-family: 'Noto Serif SC', serif;
+    margin: 0; 
+    padding: 3rem;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  /* =========================================
+     外壳容器
+     ========================================= */
+  .ellia-v2-ticket-shell {
+    display: flex; 
+    gap: 3rem;
+    width: 100%; 
+    max-width: 880px;
+    background: rgba(15, 8, 22, 0.85);
+    border: 1px solid rgba(155, 89, 182, 0.2);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 60px rgba(202, 164, 93, 0.05);
+    padding: 3.5rem 2.5rem 2.5rem 2.5rem; 
+    border-radius: 4px; 
+    position: relative;
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+  }
+
+  /* =========================================
+     高细节 SVG 铺满背景 (核心视觉丰富)
+     ========================================= */
+  .bg-watermark-svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.06;
+    animation: slow-rotate 120s linear infinite;
+  }
+
+  @keyframes slow-rotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* 精工内层边框 */
+  .ellia-inner-frame {
+    position: absolute; inset: 14px; 
+    border: 1px solid rgba(202, 164, 93, 0.25);
+    pointer-events: none; z-index: 10;
+  }
+
+  .frame-dot {
+    position: absolute; width: 4px; height: 4px;
+    background: #caa45d; border-radius: 50%;
+    box-shadow: 0 0 8px #caa45d, 0 0 15px rgba(202, 164, 93, 0.6);
+  }
+  .dot-tl { top: -2.5px; left: -2.5px; } .dot-tr { top: -2.5px; right: -2.5px; }
+  .dot-bl { bottom: -2.5px; left: -2.5px; } .dot-br { bottom: -2.5px; right: -2.5px; }
+
+  /* =========================================
+     顶部导航栏
+     ========================================= */
+  .nav-btn {
+    position: absolute; top: 1.2rem; 
+    background: transparent; border: none;
+    color: rgba(224, 176, 255, 0.5);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.8rem; letter-spacing: 0.1em;
+    cursor: pointer; transition: all 0.3s ease;
+    z-index: 20; display: flex; align-items: center;
+  }
+  .nav-btn:hover { color: #caa45d; text-shadow: 0 0 8px rgba(202, 164, 93, 0.6); }
+  .nav-btn-left { left: 2.5rem; }
+  .nav-btn-right { right: 2.5rem; }
+  .nav-btn-left:hover { transform: translateX(-4px); }
+  .nav-btn-right:hover { transform: translateX(4px); }
+
+  /* =========================================
+     文本排版 (悬浮于背景之上)
+     ========================================= */
+  .ellia-pane { 
+    flex: 1; 
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5rem;
+    z-index: 5;
+  }
+  
+  .ellia-pane-left { padding-right: 1.5rem; }
+  .ellia-pane-right { padding-left: 1.5rem; }
+
+  /* 中间微弱的星光分割线 */
+  .ellia-pane-left::after {
+    content: ""; position: absolute;
+    right: -1.5rem; top: 5%; bottom: 5%; width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(202, 164, 93, 0.2), transparent);
+  }
+
+  /* 艾莉亚的引言 (克制、直白) */
+  .ellia-intro-greeting {
+    font-size: 0.95rem;
+    color: #e0b0ff;
+    line-height: 1.8;
+    text-align: justify;
+    margin-bottom: 2rem;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    position: relative;
+  }
+
+  .ellia-intro-greeting span {
+    color: #caa45d;
+    opacity: 0.9;
+  }
+
+  /* 模块标题与小 SVG 点缀 */
+  .intro-section-title {
+    display: flex;
+    align-items: center;
+    color: #caa45d;
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.2rem;
+    text-shadow: 0 0 10px rgba(202, 164, 93, 0.4);
+  }
+  .intro-section-title svg {
+    margin-right: 8px;
+    width: 14px; height: 14px;
+    fill: none; stroke: #caa45d; stroke-width: 1.5;
+  }
+
+  /* 机制说明词条 */
+  .mechanic-item {
+    margin-bottom: 1.5rem;
+  }
+  
+  .mechanic-title {
+    color: #f1dcff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    text-shadow: 0 0 5px rgba(155, 89, 182, 0.5);
+  }
+  .mechanic-title::before {
+    content: "✦";
+    color: #caa45d;
+    font-size: 0.7rem;
+    margin-right: 6px;
+  }
+  .mechanic-title.quick::before {
+    content: "✧";
+    color: #e0b0ff;
+  }
+
+  .mechanic-desc {
+    font-size: 0.85rem;
+    color: rgba(220, 200, 255, 0.7);
+    line-height: 1.8;
+    text-align: justify;
+    padding-left: 1.2rem;
+  }
+
+  /* 底部设定说明 (观测指南) */
+  .lore-footer {
+    margin-top: auto;
+    font-size: 0.75rem;
+    color: rgba(202, 164, 93, 0.6);
+    text-align: center;
+    letter-spacing: 0.1em;
+    padding-top: 1.2rem;
+    border-top: 1px dashed rgba(202, 164, 93, 0.2);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+  <div class="ellia-v2-ticket-shell">
+    
+    <svg class="bg-watermark-svg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#caa45d" fill="none" stroke-width="0.5">
+        <circle cx="400" cy="400" r="380" stroke-dasharray="4 8" opacity="0.5"/>
+        <circle cx="400" cy="400" r="300"/>
+        <circle cx="400" cy="400" r="280" stroke-dasharray="2 4"/>
+        <circle cx="400" cy="400" r="150"/>
+        <polygon points="400,100 660,250 660,550 400,700 140,550 140,250" opacity="0.6"/>
+        <polygon points="400,120 640,260 640,540 400,680 160,540 160,260" opacity="0.3"/>
+        <path d="M400,100 L400,700 M140,250 L660,550 M140,550 L660,250" opacity="0.4"/>
+        <path d="M250,400 Q400,250 550,400 Q400,550 250,400" stroke-width="1" opacity="0.8"/>
+        <circle cx="400" cy="400" r="40" stroke-width="1"/>
+        <circle cx="400" cy="400" r="10" fill="#caa45d" opacity="0.5"/>
+      </g>
+    </svg>
+
+    <button class="nav-btn nav-btn-left" onclick="console.log('返回索引被点击')">← 返回索引</button>
+    <button class="nav-btn nav-btn-right" onclick="console.log('切回上一页被点击')">切回上一页 </button>
+
+    <div class="ellia-inner-frame">
+      <div class="frame-dot dot-tl"></div><div class="frame-dot dot-tr"></div>
+      <div class="frame-dot dot-bl"></div><div class="frame-dot dot-br"></div>
+    </div>
+
+    <div class="ellia-pane ellia-pane-left">
+      
+      <div class="ellia-intro-greeting">
+        “哟！旅伴~觉得现在的节奏太快，还是有些无聊了呢？”<br><br>
+        <span>这里记录着有关‘方向’与‘色彩’的魔法。如果您想在这个世界寻找些新的乐子，或者仅仅是想换个心情，不妨听听我的建议哦。</span>
+      </div>
+
+      <div class="intro-section-title">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15 10 23 12 15 14 12 22 9 14 1 12 9 10" /></svg>
+        命轨的指引 (GUIDANCE)
+      </div>
+
+      <div class="mechanic-item">
+        <div class="mechanic-title">您的故事</div>
+        <div class="mechanic-desc">
+          偶尔也会有迷失方向的时候吧？只要您明确地向我开口，说出“需要一个目标”或是“找点事做”，我便会在命运的丝线中，为您筛选出几个符合您当前身份与心境的契机。当然，选择权永远在您手中。
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ellia-pane ellia-pane-right">
+
+      <div class="intro-section-title">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke-dasharray="4 4" /><circle cx="12" cy="12" r="3" fill="#caa45d"/></svg>
+        命轨的色彩 (NARRATIVE STYLE)
+      </div>
+
+      <div class="mechanic-item">
+        <div class="mechanic-title quick">Blaue Blume (蓝花)</div>
+        <div class="mechanic-desc">
+          世界的模样，取决于您注视它的方式。当蓝色的花瓣飘落，您可以自由选择接下来的日常基调——是充满欢笑的冒险，热血的王道展开，还是带着些许诡谲的探秘？由您来定。
+        </div>
+      </div>
+
+      <div class="mechanic-item">
+        <div class="mechanic-title quick">Rote Blume (红花)</div>
+        <div class="mechanic-desc">
+          如果不满足于既定的色彩，那就亲手用红花来浸染吧。告诉我您想要的自定义故事氛围，哪怕只是一点模糊的偏好，我也会帮您整理、优化，并将其铭刻进世界的底层规则中。
+        </div>
+      </div>
+
+      <div class="lore-footer">
+        [ 观测指南 ]<br>
+        您拨动的每一条命运丝线，都会化作无形的符文被底层秩序（EJS变量）默默记住。
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

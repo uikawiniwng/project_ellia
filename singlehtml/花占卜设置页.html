@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>艾莉亚 - 花占卜与设定页</title>
+<style>
+  /* 基础重置与深色背景 */
+  body {
+    background: radial-gradient(circle at 50% 0%, #2b1338 0%, #0a0310 100%);
+    color: #e5c7ff;
+    font-family: 'Noto Serif SC', serif;
+    margin: 0; 
+    padding: 3rem;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  /* =========================================
+     外壳容器
+     ========================================= */
+  .ellia-v2-ticket-shell {
+    display: flex; 
+    gap: 3rem;
+    width: 100%; 
+    max-width: 950px; 
+    background: rgba(15, 8, 22, 0.85);
+    border: 1px solid rgba(155, 89, 182, 0.2);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 60px rgba(202, 164, 93, 0.03);
+    padding: 3.5rem 2.5rem 2.5rem 2.5rem; 
+    border-radius: 4px; 
+    position: relative;
+    backdrop-filter: blur(12px);
+  }
+
+  /* 精工内层极细金框 */
+  .ellia-inner-frame {
+    position: absolute;
+    inset: 14px; 
+    border: 1px solid rgba(202, 164, 93, 0.25);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* 四角发光锚点 */
+  .frame-dot {
+    position: absolute; width: 4px; height: 4px;
+    background: #caa45d; border-radius: 50%;
+    box-shadow: 0 0 8px #caa45d, 0 0 15px rgba(202, 164, 93, 0.6);
+  }
+  .dot-tl { top: -2.5px; left: -2.5px; } .dot-tr { top: -2.5px; right: -2.5px; }
+  .dot-bl { bottom: -2.5px; left: -2.5px; } .dot-br { bottom: -2.5px; right: -2.5px; }
+
+  /* 顶部导航栏 */
+  .nav-btn {
+    position: absolute; top: 1.2rem; 
+    background: transparent; border: none;
+    color: rgba(224, 176, 255, 0.5);
+    font-family: 'Noto Serif SC', serif; font-size: 0.8rem;
+    letter-spacing: 0.1em; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20; display: flex; align-items: center;
+  }
+  .nav-btn:hover {
+    color: #caa45d; text-shadow: 0 0 8px rgba(202, 164, 93, 0.6);
+  }
+  .nav-btn-left { left: 2.5rem; }
+  .nav-btn-right { right: 2.5rem; }
+  .nav-btn-left:hover { transform: translateX(-4px); }
+  .nav-btn-right:hover { transform: translateX(4px); }
+
+  /* =========================================
+     面板基础布局
+     ========================================= */
+  .ellia-pane-left { 
+    flex: 0.9; 
+    position: relative;
+    padding-right: 2rem; 
+    margin-top: 0.5rem; 
+  }
+  .ellia-pane-left::after {
+    content: ""; position: absolute;
+    right: -1.5rem; top: 5%; bottom: 5%; width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(224, 176, 255, 0.25), transparent);
+  }
+  
+  .ellia-pane-right { 
+    flex: 1.1; 
+    padding-left: 1rem; display: flex;
+    flex-direction: column; align-items: center; 
+    margin-top: 0.5rem;
+  }
+
+  /* =========================================
+     全局标题与常态选项按钮 (保留底部细线发光风格)
+     ========================================= */
+  .ellia-v2-settings-title {
+    color: rgba(202, 164, 93, 0.7); font-size: 0.8rem; 
+    letter-spacing: 0.3em; margin-bottom: 1.2rem; 
+    text-align: center; text-transform: uppercase;
+  }
+  
+  .ellia-v2-settings-subtitle {
+    color: rgba(224, 176, 255, 0.4); font-size: 0.65rem;
+    letter-spacing: 0.2em; margin: 0.8rem 0 0.4rem 0;
+    text-align: center; text-transform: uppercase;
+  }
+
+  .ellia-v2-settings-options { 
+    display: flex; flex-direction: column; gap: 0.4rem; width: 100%;
+  }
+  
+  .ellia-v2-settings-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; width: 100%;
+  }
+
+  .ellia-v2-settings-option {
+    background: transparent; border: none;
+    border-bottom: 1px solid rgba(224, 176, 255, 0.05);
+    color: rgba(240, 220, 252, 0.6);
+    padding: 0.8rem 0.5rem; font-size: 0.9rem;
+    text-align: center; cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit; letter-spacing: 0.05em;
+    position: relative; z-index: 20; 
+  }
+  .ellia-v2-settings-option:hover {
+    color: #fff; text-shadow: 0 0 10px rgba(224, 176, 255, 0.8);
+    border-bottom-color: rgba(224, 176, 255, 0.3);
+  }
+  .ellia-v2-settings-option.is-active {
+    color: #caa45d; text-shadow: 0 0 15px rgba(202, 164, 93, 0.6);
+    border-bottom: 1px solid rgba(202, 164, 93, 0.5);
+    background: radial-gradient(ellipse at bottom, rgba(202, 164, 93, 0.15) 0%, transparent 60%);
+  }
+  .ellia-v2-settings-option.is-active::before { content: "✦ "; font-size: 0.7rem; margin-right: 4px;}
+  .ellia-v2-settings-option.is-active::after { content: " ✦"; font-size: 0.7rem; margin-left: 4px;}
+
+  .ellia-divider {
+    height: 1px; width: 100%; margin: 2rem 0;
+    background: linear-gradient(90deg, transparent, rgba(224, 176, 255, 0.25), transparent);
+  }
+
+  /* =========================================
+     精致版花占卜 SVG 区域
+     ========================================= */
+  .flower-wrapper {
+    position: relative; width: 140px; height: 140px;
+    margin-bottom: 0.5rem; cursor: pointer; z-index: 20;
+    transition: transform 0.4s ease, filter 0.4s ease;
+  }
+  .flower-wrapper:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.4));
+  }
+  .flower-wrapper:active { transform: scale(0.95); }
+
+  .svg-flower { width: 100%; height: 100%; }
+
+  .divination-result {
+    font-size: 1.1rem; color: #fff; letter-spacing: 0.2em;
+    min-height: 26px; margin-bottom: 1.5rem;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+    opacity: 0; transition: opacity 0.8s ease; text-align: center;
+  }
+
+  /* =========================================
+     Rote Blume 自定义文本框与瞬时动作按钮
+     ========================================= */
+  .custom-style-container {
+    width: 100%; margin-top: 0.5rem;
+    display: none; /* 点击自定义后展开 */
+    flex-direction: column; gap: 0.5rem;
+    animation: fadeIn 0.4s ease forwards;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .custom-textarea {
+    width: 100%; box-sizing: border-box;
+    background: rgba(15, 8, 22, 0.6);
+    border: 1px solid rgba(224, 176, 255, 0.2);
+    border-radius: 4px; padding: 1rem;
+    color: #f1dcff; font-family: inherit; font-size: 0.85rem;
+    resize: none; min-height: 80px; outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .custom-textarea:focus {
+    border-color: rgba(202, 164, 93, 0.6);
+    box-shadow: 0 0 10px rgba(202, 164, 93, 0.2);
+  }
+  .custom-textarea::placeholder { color: rgba(224, 176, 255, 0.3); letter-spacing: 0.05em; }
+
+  .custom-actions {
+    display: flex; justify-content: space-between; width: 100%; gap: 0.5rem;
+  }
+
+  /* 专属的瞬间触发按钮 (无底色，仅按下有颜色) */
+  .action-btn-momentary {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent; /* 维持与常态按钮的高度一致 */
+    color: rgba(224, 176, 255, 0.5); /* 较暗的字色，保持低调 */
+    padding: 0.8rem 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.1s ease; /* 极快的过渡，响应点击 */
+    font-family: inherit;
+    letter-spacing: 0.05em;
+  }
+  .action-btn-momentary:hover {
+    color: rgba(255, 255, 255, 0.8);
+  }
+  /* 仅按下的瞬间发光并变色 */
+  .action-btn-momentary:active {
+    color: #caa45d;
+    text-shadow: 0 0 15px rgba(202, 164, 93, 1);
+    background: radial-gradient(ellipse at bottom, rgba(202, 164, 93, 0.2) 0%, transparent 70%);
+    border-bottom: 1px solid rgba(202, 164, 93, 0.6);
+  }
+
+</style>
+</head>
+<body>
+
+  <div class="ellia-v2-ticket-shell">
+    
+    <button class="nav-btn nav-btn-left" onclick="console.log('返回')">← 返回索引</button>
+    <button class="nav-btn nav-btn-right" onclick="console.log('下一页')">翻到下一页 →</button>
+
+    <div class="ellia-inner-frame">
+      <div class="frame-dot dot-tl"></div><div class="frame-dot dot-tr"></div>
+      <div class="frame-dot dot-bl"></div><div class="frame-dot dot-br"></div>
+    </div>
+
+    <div class="ellia-pane-left">
+      <div class="ellia-v2-settings-title">FORM</div>
+      <div class="ellia-v2-settings-options">
+        <button class="ellia-v2-settings-option form-btn is-active" onclick="selectOption(this, 'form-btn')">灵体化</button>
+        <button class="ellia-v2-settings-option form-btn" onclick="selectOption(this, 'form-btn')">实体化</button>
+        <button class="ellia-v2-settings-option form-btn" onclick="selectOption(this, 'form-btn')">噤默化</button>
+      </div>
+
+      <div class="ellia-divider"></div>
+
+      <div class="ellia-v2-settings-title">THIRD SKILL SLOT</div>
+      <div class="ellia-v2-settings-options">
+        <button class="ellia-v2-settings-option skill3-btn is-active" onclick="selectOption(this, 'skill3-btn')">您的故事</button>
+        <button class="ellia-v2-settings-option skill3-btn" onclick="selectOption(this, 'skill3-btn')">关闭您的故事</button>
+      </div>
+    </div>
+
+    <div class="ellia-pane-right">
+      
+      <div class="flower-wrapper" onclick="pluckFlower()">
+        <svg class="svg-flower" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="flowerGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+              <stop offset="30%" stop-color="#fdf4ff" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#e0b0ff" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="petalGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+              <stop offset="100%" stop-color="rgba(255,255,255,0.75)" />
+            </linearGradient>
+          </defs>
+          <g transform="translate(100, 100)">
+            <circle cx="0" cy="0" r="75" fill="none" stroke="rgba(202, 164, 93, 0.2)" stroke-width="1" stroke-dasharray="2 6" />
+            <circle cx="0" cy="0" r="45" fill="none" stroke="rgba(224, 176, 255, 0.15)" stroke-width="0.5" />
+            
+            <g stroke="rgba(224, 176, 255, 0.4)" stroke-width="1" fill="none">
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" />
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" transform="rotate(45)" />
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" transform="rotate(90)" />
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" transform="rotate(135)" />
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" transform="rotate(180)" />
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" transform="rotate(225)" />
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" transform="rotate(270)" />
+              <path d="M0,0 C35,-45 20,-85 0,-95 C-20,-85 -35,-45 0,0 Z" transform="rotate(315)" />
+            </g>
+            
+            <g fill="url(#petalGrad)" stroke="rgba(255, 255, 255, 0.9)" stroke-width="1.2">
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(22.5)" />
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(67.5)" />
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(112.5)" />
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(157.5)" />
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(202.5)" />
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(247.5)" />
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(292.5)" />
+              <path d="M0,0 C25,-35 15,-65 0,-75 C-15,-65 -25,-35 0,0 Z" transform="rotate(337.5)" />
+            </g>
+            
+            <g fill="rgba(255, 255, 255, 0.2)" stroke="#fff" stroke-width="0.8">
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" />
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" transform="rotate(45)" />
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" transform="rotate(90)" />
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" transform="rotate(135)" />
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" transform="rotate(180)" />
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" transform="rotate(225)" />
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" transform="rotate(270)" />
+              <path d="M0,0 C12,-20 8,-40 0,-45 C-8,-40 -12,-20 0,0 Z" transform="rotate(315)" />
+            </g>
+
+            <circle cx="0" cy="0" r="22" fill="url(#flowerGlow)" />
+            <circle cx="0" cy="0" r="4" fill="#fff" filter="drop-shadow(0 0 6px #fff)" />
+            <path d="M-10,0 L10,0 M0,-10 L0,10" stroke="#caa45d" stroke-width="1.5" stroke-linecap="round" />
+          </g>
+        </svg>
+      </div>
+      
+      <div class="divination-result" id="divinationText">[ 等待倾听 ]</div>
+
+      <div class="ellia-v2-settings-title" style="margin-bottom: 0;">FOURTH SKILL</div>
+
+      <div class="ellia-v2-settings-subtitle">Responsive</div>
+      <div class="ellia-v2-settings-options">
+        <button class="ellia-v2-settings-option style-btn is-active" onclick="selectStoryStyle(this, false)">当前的故事风格由世界本身决定</button>
+      </div>
+
+      <div class="ellia-v2-settings-subtitle">Blaue Blume</div>
+      <div class="ellia-v2-settings-grid">
+        <button class="ellia-v2-settings-option style-btn" onclick="selectStoryStyle(this, false)">欢乐向冒险</button>
+        <button class="ellia-v2-settings-option style-btn" onclick="selectStoryStyle(this, false)">日式王道</button>
+        <button class="ellia-v2-settings-option style-btn" onclick="selectStoryStyle(this, false)">诡谲探灵</button>
+        <button class="ellia-v2-settings-option style-btn" onclick="selectStoryStyle(this, false)">平淡日常</button>
+      </div>
+
+      <div class="ellia-v2-settings-subtitle">Rote Blume</div>
+      <div class="ellia-v2-settings-options">
+        <button class="ellia-v2-settings-option style-btn" id="customTriggerBtn" onclick="selectStoryStyle(this, true)">自定义</button>
+      </div>
+
+      <div class="custom-style-container" id="customInputBox">
+        <textarea class="custom-textarea" placeholder="输入你想要的自定义故事风格"></textarea>
+        <div class="custom-actions">
+          <button class="action-btn-momentary" onclick="triggerActionEffect(this)">传送</button>
+          <button class="action-btn-momentary" onclick="triggerActionEffect(this)">帮我想/优化!</button>
+          <button class="action-btn-momentary" onclick="cancelCustom()">取消</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // 通用的选项互斥切换函数
+    function selectOption(element, groupClass) {
+      const buttons = document.querySelectorAll('.' + groupClass);
+      buttons.forEach(btn => btn.classList.remove('is-active'));
+      element.classList.add('is-active');
+    }
+
+    // 针对第四技能（故事风格）的特殊处理
+    function selectStoryStyle(element, isCustom) {
+      selectOption(element, 'style-btn');
+      const customBox = document.getElementById('customInputBox');
+      if (isCustom) {
+        customBox.style.display = 'flex';
+      } else {
+        customBox.style.display = 'none';
+      }
+    }
+
+    // 自定义输入框的“取消”按钮逻辑
+    function cancelCustom() {
+      document.getElementById('customInputBox').style.display = 'none';
+      // 退回到“世界本身决定”
+      const buttons = document.querySelectorAll('.style-btn');
+      buttons.forEach(btn => btn.classList.remove('is-active'));
+      buttons[0].classList.add('is-active'); 
+    }
+
+    // 用于给瞬间触发按钮绑定额外的交互反馈（如果需要）
+    function triggerActionEffect(btn) {
+      console.log(btn.innerText + " 按钮被点击了！");
+      // 样式已经在 CSS 的 :active 中处理，无需在此处操作 DOM
+    }
+
+    // 花占卜点击动画逻辑
+    function pluckFlower() {
+      const textEl = document.getElementById('divinationText');
+      textEl.style.opacity = 0;
+      
+      setTimeout(() => {
+        textEl.innerText = "....";
+        textEl.style.opacity = 1;
+      }, 400);
+    }
+  </script>
+</body>
+</html>

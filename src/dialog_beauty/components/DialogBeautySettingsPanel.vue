@@ -40,6 +40,40 @@
           @quick-reply="emit('quick-reply', $event)"
         />
 
+        <DialogBeautySettingsSkill2Shell
+          v-else-if="activeSection === 'skill2'"
+          :story-settings="storySettings"
+          @back="currentView = 'home'"
+          @set-skill="forwardSetSkill"
+          @quick-reply="emit('quick-reply', $event)"
+        />
+
+        <DialogBeautySettingsWorldShell
+          v-else-if="activeSection === 'world'"
+          :story-settings="storySettings"
+          :is-story-style-diy-open="isStoryStyleDiyOpen"
+          :story-style-diy-draft="storyStyleDiyDraft"
+          :story-style-diy-status="storyStyleDiyStatus"
+          @back="currentView = 'home'"
+          @set-form-type="emit('set-form-type', $event)"
+          @set-skill="forwardSetSkill"
+          @set-story-style="emit('set-story-style', $event)"
+          @open-story-style-diy="emit('open-story-style-diy')"
+          @close-story-style-diy="emit('close-story-style-diy')"
+          @request-story-style-suggestion="emit('request-story-style-suggestion')"
+          @save-story-style-diy="emit('save-story-style-diy')"
+          @update:story-style-diy-draft="emit('update:story-style-diy-draft', $event)"
+        />
+
+        <DialogBeautySettingsBeautyShell
+          v-else-if="activeSection === 'beauty'"
+          :ui-settings="uiSettings"
+          @back="currentView = 'home'"
+          @set-font-mode="emit('set-font-mode', $event)"
+          @set-animation-enabled="emit('set-animation-enabled', $event)"
+          @set-typewriter-speed="emit('set-typewriter-speed', $event)"
+        />
+
         <section v-else class="ellia-v2-ticket-shell" :class="`theme-${activeSection}`">
           <div class="ellia-v2-ticket-shell-head">
             <button type="button" class="ellia-v2-back-button" @click="currentView = 'home'">← 返回索引</button>
@@ -75,43 +109,14 @@
             </div>
           </div>
 
-          <div class="ellia-v2-ticket-page ellia-v2-ticket-page-settings" v-show="activeTab === 'settings'">
-            <DialogBeautySettingsSkill2Page
-              v-if="activeSection === 'skill2'"
-              :story-settings="storySettings"
-              @set-skill="forwardSetSkill"
-              @quick-reply="emit('quick-reply', $event)"
-            />
-            <DialogBeautySettingsWorldPage
-              v-else-if="activeSection === 'world'"
-              :story-settings="storySettings"
-              :is-story-style-diy-open="isStoryStyleDiyOpen"
-              :story-style-diy-draft="storyStyleDiyDraft"
-              :story-style-diy-status="storyStyleDiyStatus"
-              @set-form-type="emit('set-form-type', $event)"
-              @set-skill="forwardSetSkill"
-              @set-story-style="emit('set-story-style', $event)"
-              @open-story-style-diy="emit('open-story-style-diy')"
-              @close-story-style-diy="emit('close-story-style-diy')"
-              @request-story-style-suggestion="emit('request-story-style-suggestion')"
-              @save-story-style-diy="emit('save-story-style-diy')"
-              @update:story-style-diy-draft="emit('update:story-style-diy-draft', $event)"
-            />
-            <DialogBeautySettingsBeautyPage
-              v-else-if="activeSection === 'beauty'"
-              :ui-settings="uiSettings"
-              @set-font-mode="emit('set-font-mode', $event)"
-              @set-animation-enabled="emit('set-animation-enabled', $event)"
-              @set-typewriter-speed="emit('set-typewriter-speed', $event)"
-            />
-
+          <div v-show="activeTab === 'settings'" class="ellia-v2-ticket-page ellia-v2-ticket-page-settings">
             <div class="ellia-v2-settings-note">
               <div>字体 / 动画 / 打字速度：保存到全局变量</div>
               <div>型态 / 技能 / 故事风格：保存到聊天变量，供后续 EJS / 世界书读取</div>
             </div>
           </div>
 
-          <div class="ellia-v2-ticket-page ellia-v2-ticket-page-detail" v-show="activeTab === 'detail'">
+          <div v-show="activeTab === 'detail'" class="ellia-v2-ticket-page ellia-v2-ticket-page-detail">
             <div class="ellia-v2-settings-note ellia-v2-settings-note-inline">
               <div>字体 / 动画 / 打字速度：保存到全局变量</div>
               <div>型态 / 技能 / 故事风格：保存到聊天变量，供后续 EJS / 世界书读取</div>
@@ -133,10 +138,10 @@ import {
   skillOptionGroups,
   typewriterSpeedOptions,
 } from '../constants';
-import DialogBeautySettingsBeautyPage from './DialogBeautySettingsBeautyPage.vue';
+import DialogBeautySettingsBeautyShell from './DialogBeautySettingsBeautyShell.vue';
 import DialogBeautySettingsSkill1Shell from './DialogBeautySettingsSkill1Shell.vue';
-import DialogBeautySettingsSkill2Page from './DialogBeautySettingsSkill2Page.vue';
-import DialogBeautySettingsWorldPage from './DialogBeautySettingsWorldPage.vue';
+import DialogBeautySettingsSkill2Shell from './DialogBeautySettingsSkill2Shell.vue';
+import DialogBeautySettingsWorldShell from './DialogBeautySettingsWorldShell.vue';
 import DialogBeautyTicketCard from './DialogBeautyTicketCard.vue';
 import type {
   DialogBeautyStorySettings,
@@ -179,7 +184,9 @@ const emit = defineEmits<{
 const currentView = ref<'home' | 'detail'>('home');
 const activeTab = ref<'settings' | 'detail'>('settings');
 
-const currentSection = computed(() => settingsSections.find(section => section.key === props.activeSection) ?? settingsSections[0]);
+const currentSection = computed(
+  () => settingsSections.find(section => section.key === props.activeSection) ?? settingsSections[0],
+);
 
 const currentStatus = computed(() => {
   switch (props.activeSection) {
