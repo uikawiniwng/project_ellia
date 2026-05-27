@@ -30,7 +30,7 @@
           :aria-expanded="isSettingsOpen(card.id)"
           @click.stop="toggleSettings(card.id)"
         >
-          ⚙
+          ✦
         </button>
         <button
           v-if="!card.hasPlayed && !card.isAnimating"
@@ -125,12 +125,7 @@ import {
   persistStorySettings,
   syncFormTypeToMessageVariables,
 } from './settings';
-import {
-  buildStoryToneReminder,
-  buildStoryToneRequest,
-  insertIntoPromptInput,
-  spendStoryToneFp,
-} from './story-tone';
+import { buildStoryToneReminder, buildStoryToneRequest, insertIntoPromptInput, spendStoryToneFp } from './story-tone';
 import { buildTypewriterTimeline, renderStaticText } from './typewriter';
 import { getCurrentElliaBlockIndex, parseCurrentElliaBlock } from './parser';
 import type {

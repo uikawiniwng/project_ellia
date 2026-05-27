@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { fontOptions, typewriterSpeedOptions } from '../constants';
 import type { DialogBeautyUiSettings, FontMode, TypewriterSpeed } from '../types';
+
+const primaryPortraitUrl = 'https://files.catbox.moe/nucxpp.png';
+const fallbackPortraitUrl = 'https://s3.uuu.ovh/2026/05/23/RiLOpGNQ.png';
 
 defineProps<{
   uiSettings: DialogBeautyUiSettings;
@@ -15,19 +18,29 @@ const emit = defineEmits<{
 }>();
 
 const isCuriousAboutFace = ref(false);
+const activePage = ref<'settings' | 'intro'>('settings');
+const portraitSrc = ref(primaryPortraitUrl);
+
+const pageNavLabel = computed(() => (activePage.value === 'settings' ? '切换到下一页？' : '切回上一页'));
+
+function togglePage() {
+  activePage.value = activePage.value === 'settings' ? 'intro' : 'settings';
+}
+
+function handlePortraitError() {
+  if (portraitSrc.value !== fallbackPortraitUrl) {
+    portraitSrc.value = fallbackPortraitUrl;
+  }
+}
 </script>
 
 <template>
-  <section class="ellia-beauty-shell">
+  <section class="ellia-beauty-shell" :class="{ 'is-intro': activePage === 'intro' }">
     <button type="button" class="ellia-beauty-nav-btn ellia-beauty-nav-btn-left" @click="emit('back')">
       ← 返回索引
     </button>
-    <button
-      type="button"
-      class="ellia-beauty-nav-btn ellia-beauty-nav-btn-right"
-      @click="isCuriousAboutFace = !isCuriousAboutFace"
-    >
-      切换到下一页？
+    <button type="button" class="ellia-beauty-nav-btn ellia-beauty-nav-btn-right" @click="togglePage">
+      {{ pageNavLabel }}
     </button>
 
     <div class="ellia-beauty-inner-frame">
@@ -37,154 +50,193 @@ const isCuriousAboutFace = ref(false);
       <div class="ellia-beauty-frame-dot dot-br"></div>
     </div>
 
-    <div class="ellia-beauty-pane-left">
-      <div class="ellia-beauty-greeting">
-        “哟！旅伴~这是最后的调整咯。<br />
-        虽然弄了个类似碟仙的游标，但我可不想再玩什么占卜游戏了。这只是为了维持我们“通讯”的小信标罢了。快看看还有什么需要顺手调一下的吧？”
-      </div>
+    <template v-if="activePage === 'settings'">
+      <div class="ellia-beauty-pane-left">
+        <div class="ellia-beauty-greeting">
+          “哟！旅伴~这是最后的调整咯。<br />
+          虽然弄了个类似碟仙的游标，但我可不想再玩什么占卜游戏了。这只是为了维持我们“通讯”的小信标罢了。快看看还有什么需要顺手调一下的吧？”
+        </div>
 
-      <div class="ellia-beauty-settings-group">
-        <div class="ellia-beauty-settings-title">FONT STYLE / 字体</div>
-        <div class="ellia-beauty-settings-options">
-          <button
-            v-for="option in fontOptions"
-            :key="option.value"
-            type="button"
-            class="ellia-beauty-settings-option"
-            :class="{ 'is-active': uiSettings.fontMode === option.value }"
-            @click="emit('set-font-mode', option.value)"
-          >
-            {{ option.label }}
-          </button>
+        <div class="ellia-beauty-settings-group">
+          <div class="ellia-beauty-settings-title">FONT STYLE / 字体</div>
+          <div class="ellia-beauty-settings-options">
+            <button
+              v-for="option in fontOptions"
+              :key="option.value"
+              type="button"
+              class="ellia-beauty-settings-option"
+              :class="{ 'is-active': uiSettings.fontMode === option.value }"
+              @click="emit('set-font-mode', option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="ellia-beauty-settings-group">
+          <div class="ellia-beauty-settings-title">ENVIRONMENT ANIMATION / 环境动画</div>
+          <div class="ellia-beauty-settings-options">
+            <button
+              type="button"
+              class="ellia-beauty-settings-option"
+              :class="{ 'is-active': uiSettings.animationEnabled }"
+              @click="emit('set-animation-enabled', true)"
+            >
+              On
+            </button>
+            <button
+              type="button"
+              class="ellia-beauty-settings-option"
+              :class="{ 'is-active': !uiSettings.animationEnabled }"
+              @click="emit('set-animation-enabled', false)"
+            >
+              Off
+            </button>
+          </div>
+        </div>
+
+        <div class="ellia-beauty-settings-group">
+          <div class="ellia-beauty-settings-title">TYPING SPEED / 打字速度</div>
+          <div class="ellia-beauty-settings-options">
+            <button
+              v-for="option in typewriterSpeedOptions"
+              :key="option.value"
+              type="button"
+              class="ellia-beauty-settings-option"
+              :class="{ 'is-active': uiSettings.typewriterSpeed === option.value }"
+              @click="emit('set-typewriter-speed', option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="ellia-beauty-settings-group ellia-beauty-face-group">
+          <div class="ellia-beauty-settings-title title-curious">“您难道好奇我的面容？”</div>
+          <div class="ellia-beauty-settings-options">
+            <button
+              type="button"
+              class="ellia-beauty-settings-option"
+              :class="{ 'is-active': isCuriousAboutFace }"
+              @click="isCuriousAboutFace = true"
+            >
+              是
+            </button>
+            <button
+              type="button"
+              class="ellia-beauty-settings-option"
+              :class="{ 'is-active': !isCuriousAboutFace }"
+              @click="isCuriousAboutFace = false"
+            >
+              不是
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="ellia-beauty-settings-group">
-        <div class="ellia-beauty-settings-title">ENVIRONMENT ANIMATION / 环境动画</div>
-        <div class="ellia-beauty-settings-options">
-          <button
-            type="button"
-            class="ellia-beauty-settings-option"
-            :class="{ 'is-active': uiSettings.animationEnabled }"
-            @click="emit('set-animation-enabled', true)"
+      <div class="ellia-beauty-pane-right">
+        <div class="ellia-beauty-detail-title">跨界信标</div>
+        <div class="ellia-beauty-detail-subtitle">SPIRIT ANCHOR</div>
+
+        <div class="ellia-beauty-planchette-wrapper">
+          <svg class="ellia-beauty-svg-planchette" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="ellia-beauty-planchette-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#caa45d" stop-opacity="0.2" />
+                <stop offset="100%" stop-color="transparent" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="ellia-beauty-planchette-body" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#140a20" />
+                <stop offset="100%" stop-color="#2a1640" />
+              </linearGradient>
+            </defs>
+
+            <circle cx="100" cy="120" r="90" fill="url(#ellia-beauty-planchette-glow)" />
+
+            <g transform="translate(0, 10)">
+              <path
+                d="M 100 10 C 140 70, 180 130, 170 180 C 160 210, 40 210, 30 180 C 20 130, 60 70, 100 10 Z"
+                fill="url(#ellia-beauty-planchette-body)"
+                stroke="#caa45d"
+                stroke-width="2"
+                stroke-opacity="0.8"
+              />
+
+              <path
+                d="M 100 20 C 135 75, 170 130, 162 175 C 153 200, 47 200, 38 175 C 30 130, 65 75, 100 20 Z"
+                fill="none"
+                stroke="#caa45d"
+                stroke-width="0.5"
+                stroke-opacity="0.4"
+                stroke-dasharray="3 3"
+              />
+
+              <path
+                d="M 50 150 L 60 160 M 150 150 L 140 160 M 100 180 L 100 190"
+                stroke="#caa45d"
+                stroke-opacity="0.5"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+              <circle cx="100" cy="40" r="2" fill="#caa45d" />
+
+              <circle cx="100" cy="110" r="30" fill="#0a0310" stroke="#caa45d" stroke-width="1.5" />
+              <circle cx="100" cy="110" r="38" fill="none" stroke="#caa45d" stroke-width="0.5" stroke-dasharray="2 4" />
+
+              <path d="M 80 110 Q 100 95 120 110 Q 100 125 80 110 Z" fill="none" stroke="#e0b0ff" stroke-width="1.5" />
+              <circle cx="100" cy="110" r="6" fill="#e0b0ff" filter="drop-shadow(0 0 5px #e0b0ff)" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="ellia-beauty-flavor-text">
+          「 跨越维度的锚点，只为您传递真实 」<br />
+          <span>它不再预示未来，只会安静地注视着您。</span>
+        </div>
+
+        <div class="ellia-beauty-ticket-detail-status">
+          基础设置已就绪<br />
+          <span>所有选项均已同步至底层环境</span>
+        </div>
+      </div>
+    </template>
+
+    <template v-else>
+      <div class="ellia-beauty-pane-left">
+        <div class="ellia-beauty-intro-greeting">
+          “如何？这下满足您的好奇心了吧？”<br /><br />
+          <span
+            >为了构建这个能在维度间传递信息的锚点，我可是费了不少功夫呢。毕竟，要将我的‘形象’投影到您的世界，可不是件容易的事。</span
           >
-            On
-          </button>
-          <button
-            type="button"
-            class="ellia-beauty-settings-option"
-            :class="{ 'is-active': !uiSettings.animationEnabled }"
-            @click="emit('set-animation-enabled', false)"
-          >
-            Off
-          </button>
+        </div>
+
+        <div class="ellia-beauty-section-title">
+          <svg viewBox="0 0 24 24">
+            <polygon points="12 2 15 10 23 12 15 14 12 22 9 14 1 12 9 10" />
+          </svg>
+          信标的实质 (ANCHOR ESSENCE)
+        </div>
+
+        <div class="ellia-beauty-mechanic-item">
+          <div class="ellia-beauty-mechanic-title">稳定通讯</div>
+          <div class="ellia-beauty-mechanic-desc">
+            这可不是什么简单的虚影。通过这个锚点，我们不仅能够进行对话，还能在这个小小的界面中，完成一些更为……精妙的互动。
+          </div>
         </div>
       </div>
 
-      <div class="ellia-beauty-settings-group">
-        <div class="ellia-beauty-settings-title">TYPING SPEED / 打字速度</div>
-        <div class="ellia-beauty-settings-options">
-          <button
-            v-for="option in typewriterSpeedOptions"
-            :key="option.value"
-            type="button"
-            class="ellia-beauty-settings-option"
-            :class="{ 'is-active': uiSettings.typewriterSpeed === option.value }"
-            @click="emit('set-typewriter-speed', option.value)"
-          >
-            {{ option.label }}
-          </button>
+      <div class="ellia-beauty-pane-right ellia-beauty-pane-right-intro">
+        <div class="ellia-beauty-portrait-wrapper">
+          <img :src="portraitSrc" alt="Ellia Portrait" class="ellia-beauty-portrait" @error="handlePortraitError" />
+          <div class="ellia-beauty-portrait-frame"></div>
+        </div>
+
+        <div class="ellia-beauty-lore-footer">
+          [ 观测指南 ]<br />
+          这可是我为了这次会面特意准备的“形态”，还请……手下留情哦。
         </div>
       </div>
-
-      <div class="ellia-beauty-settings-group ellia-beauty-face-group">
-        <div class="ellia-beauty-settings-title title-curious">“您难道好奇我的面容？”</div>
-        <div class="ellia-beauty-settings-options">
-          <button
-            type="button"
-            class="ellia-beauty-settings-option"
-            :class="{ 'is-active': isCuriousAboutFace }"
-            @click="isCuriousAboutFace = true"
-          >
-            是
-          </button>
-          <button
-            type="button"
-            class="ellia-beauty-settings-option"
-            :class="{ 'is-active': !isCuriousAboutFace }"
-            @click="isCuriousAboutFace = false"
-          >
-            不是
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="ellia-beauty-pane-right">
-      <div class="ellia-beauty-detail-title">跨界信标</div>
-      <div class="ellia-beauty-detail-subtitle">SPIRIT ANCHOR</div>
-
-      <div class="ellia-beauty-planchette-wrapper">
-        <svg class="ellia-beauty-svg-planchette" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="ellia-beauty-planchette-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#caa45d" stop-opacity="0.2" />
-              <stop offset="100%" stop-color="transparent" stop-opacity="0" />
-            </radialGradient>
-            <linearGradient id="ellia-beauty-planchette-body" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#140a20" />
-              <stop offset="100%" stop-color="#2a1640" />
-            </linearGradient>
-          </defs>
-
-          <circle cx="100" cy="120" r="90" fill="url(#ellia-beauty-planchette-glow)" />
-
-          <g transform="translate(0, 10)">
-            <path
-              d="M 100 10 C 140 70, 180 130, 170 180 C 160 210, 40 210, 30 180 C 20 130, 60 70, 100 10 Z"
-              fill="url(#ellia-beauty-planchette-body)"
-              stroke="#caa45d"
-              stroke-width="2"
-              stroke-opacity="0.8"
-            />
-
-            <path
-              d="M 100 20 C 135 75, 170 130, 162 175 C 153 200, 47 200, 38 175 C 30 130, 65 75, 100 20 Z"
-              fill="none"
-              stroke="#caa45d"
-              stroke-width="0.5"
-              stroke-opacity="0.4"
-              stroke-dasharray="3 3"
-            />
-
-            <path
-              d="M 50 150 L 60 160 M 150 150 L 140 160 M 100 180 L 100 190"
-              stroke="#caa45d"
-              stroke-opacity="0.5"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-            <circle cx="100" cy="40" r="2" fill="#caa45d" />
-
-            <circle cx="100" cy="110" r="30" fill="#0a0310" stroke="#caa45d" stroke-width="1.5" />
-            <circle cx="100" cy="110" r="38" fill="none" stroke="#caa45d" stroke-width="0.5" stroke-dasharray="2 4" />
-
-            <path d="M 80 110 Q 100 95 120 110 Q 100 125 80 110 Z" fill="none" stroke="#e0b0ff" stroke-width="1.5" />
-            <circle cx="100" cy="110" r="6" fill="#e0b0ff" filter="drop-shadow(0 0 5px #e0b0ff)" />
-          </g>
-        </svg>
-      </div>
-
-      <div class="ellia-beauty-flavor-text">
-        「 跨越维度的锚点，只为您传递真实 」<br />
-        <span>它不再预示未来，只会安静地注视着您。</span>
-      </div>
-
-      <div class="ellia-beauty-ticket-detail-status">
-        基础设置已就绪<br />
-        <span>所有选项均已同步至底层环境</span>
-      </div>
-    </div>
+    </template>
   </section>
 </template>
 
@@ -204,6 +256,12 @@ const isCuriousAboutFace = ref(false);
     inset 0 0 60px rgba(202, 164, 93, 0.03);
   backdrop-filter: blur(12px);
   overflow: hidden;
+}
+
+.ellia-beauty-shell.is-intro {
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.9),
+    inset 0 0 60px rgba(202, 164, 93, 0.05);
 }
 
 .ellia-beauty-inner-frame {
@@ -455,6 +513,136 @@ const isCuriousAboutFace = ref(false);
   text-align: center;
 }
 
+.ellia-beauty-pane-right-intro {
+  align-items: center;
+  justify-content: center;
+}
+
+.ellia-beauty-intro-greeting {
+  position: relative;
+  margin-bottom: 2rem;
+  color: #e0b0ff;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+  text-align: justify;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.ellia-beauty-intro-greeting span {
+  color: #caa45d;
+  opacity: 0.9;
+}
+
+.ellia-beauty-section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  color: #caa45d;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 10px rgba(202, 164, 93, 0.4);
+}
+
+.ellia-beauty-section-title svg {
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  fill: none;
+  stroke: #caa45d;
+  stroke-width: 1.5;
+}
+
+.ellia-beauty-mechanic-item {
+  margin-bottom: 1.5rem;
+}
+
+.ellia-beauty-mechanic-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  color: #f1dcff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-shadow: 0 0 5px rgba(155, 89, 182, 0.5);
+}
+
+.ellia-beauty-mechanic-title::before {
+  content: '✦';
+  margin-right: 6px;
+  color: #caa45d;
+  font-size: 0.7rem;
+}
+
+.ellia-beauty-mechanic-desc {
+  padding-left: 1.2rem;
+  color: rgba(220, 200, 255, 0.7);
+  font-size: 0.85rem;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.ellia-beauty-portrait-wrapper {
+  position: relative;
+  width: clamp(260px, 34vw, 360px);
+  height: clamp(260px, 34vw, 360px);
+  margin-bottom: 1.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  animation: ellia-beauty-mystic-float 6s ease-in-out infinite;
+}
+
+.ellia-beauty-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+}
+
+.ellia-beauty-portrait-wrapper:hover .ellia-beauty-portrait {
+  transform: scale(1.05);
+}
+
+.ellia-beauty-portrait-frame {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(202, 164, 93, 0.4);
+  border-radius: 50%;
+  box-shadow: inset 0 0 20px rgba(202, 164, 93, 0.2);
+  pointer-events: none;
+}
+
+.ellia-beauty-portrait-frame::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 1px dashed rgba(202, 164, 93, 0.6);
+  border-radius: 50%;
+  animation: ellia-beauty-spin 30s linear infinite;
+}
+
+@keyframes ellia-beauty-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ellia-beauty-lore-footer {
+  margin-top: auto;
+  padding-top: 1.2rem;
+  border-top: 1px dashed rgba(202, 164, 93, 0.2);
+  color: rgba(202, 164, 93, 0.6);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
 :global(.ellia-v2-root[data-animations-enabled='false'] .ellia-beauty-nav-btn),
 :global(.ellia-v2-root[data-animations-enabled='false'] .ellia-beauty-settings-option) {
   transition: none !important;
@@ -501,6 +689,11 @@ const isCuriousAboutFace = ref(false);
 @media (max-width: 640px) {
   .ellia-beauty-shell {
     padding: 3rem 1rem 1rem;
+  }
+
+  .ellia-beauty-portrait-wrapper {
+    width: min(78vw, 300px);
+    height: min(78vw, 300px);
   }
 
   .ellia-beauty-nav-btn {
