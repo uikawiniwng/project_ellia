@@ -23,33 +23,6 @@
       </div>
       <div class="ellia-v2-star-dust"></div>
 
-      <div class="ellia-v2-corner-controls">
-        <button
-          class="ellia-v2-control-button ellia-v2-settings-button"
-          type="button"
-          :aria-expanded="isSettingsOpen(card.id)"
-          @click.stop="toggleSettings(card.id)"
-        >
-          ✦
-        </button>
-        <button
-          v-if="!card.hasPlayed && !card.isAnimating"
-          class="ellia-v2-control-button ellia-v2-play-button"
-          type="button"
-          @click.stop="startCardFromControl(card.id)"
-        >
-          Play
-        </button>
-        <button
-          v-else-if="card.canReplay && !card.isAnimating"
-          class="ellia-v2-control-button ellia-v2-replay-button"
-          type="button"
-          @click.stop="replayCard(card.id)"
-        >
-          ↻
-        </button>
-      </div>
-
       <div
         class="ellia-v2-card-inner ellia-v2-trigger-surface"
         @mouseenter="requestPlay(card.id)"
@@ -65,6 +38,32 @@
             <span class="v2-name-en">Ellia</span>
           </div>
           <div class="ellia-v2-header-line"></div>
+          <div class="ellia-v2-corner-controls">
+            <button
+              v-if="!card.hasPlayed && !card.isAnimating"
+              class="ellia-v2-control-button ellia-v2-play-button"
+              type="button"
+              @click.stop="startCardFromControl(card.id)"
+            >
+              Play
+            </button>
+            <button
+              v-else-if="card.canReplay && !card.isAnimating"
+              class="ellia-v2-control-button ellia-v2-replay-button"
+              type="button"
+              @click.stop="replayCard(card.id)"
+            >
+              ↻
+            </button>
+            <button
+              class="ellia-v2-control-button ellia-v2-settings-button"
+              type="button"
+              :aria-expanded="isSettingsOpen(card.id)"
+              @click.stop="toggleSettings(card.id)"
+            >
+              ✦
+            </button>
+          </div>
         </div>
 
         <div class="ellia-v2-debug-strip">
@@ -678,7 +677,7 @@ onBeforeUnmount(() => {
 
 .ellia-v2-card-inner {
   position: relative;
-  padding: 44px 18px 14px;
+  padding: 22px 18px 14px;
   z-index: 2;
   border-radius: 4px;
 }
@@ -700,6 +699,7 @@ onBeforeUnmount(() => {
   position: relative;
   margin-right: 12px;
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
 }
@@ -742,6 +742,7 @@ onBeforeUnmount(() => {
 
 .ellia-v2-title {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   line-height: 1;
 }
@@ -762,10 +763,11 @@ onBeforeUnmount(() => {
 }
 
 .ellia-v2-header-line {
-  flex-grow: 1;
+  flex: 1 1 auto;
   height: 1px;
   background: linear-gradient(90deg, var(--e-main), transparent);
   margin-left: 15px;
+  min-width: 24px;
   opacity: 0.5;
   transition:
     background 0.35s ease,
@@ -838,19 +840,19 @@ onBeforeUnmount(() => {
 }
 
 .ellia-v2-corner-controls {
-  position: absolute;
-  top: 10px;
-  right: 12px;
   z-index: 6;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.45rem;
-  flex-wrap: wrap;
-  max-width: calc(100% - 24px);
+  flex: 0 0 auto;
+  margin-left: 0.45rem;
 }
 
 .ellia-v2-control-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(224, 176, 255, 0.78);
   border-radius: 999px;
   background: rgba(46, 16, 53, 0.9);
@@ -878,13 +880,7 @@ onBeforeUnmount(() => {
 }
 
 .ellia-v2-settings-button {
-  order: 2;
   flex: 0 0 auto;
-}
-
-.ellia-v2-play-button,
-.ellia-v2-replay-button {
-  order: 1;
 }
 
 .ellia-v2-play-button {
@@ -974,13 +970,12 @@ onBeforeUnmount(() => {
 
 @media (max-width: 640px) {
   .ellia-v2-card-inner {
-    padding: 50px 14px 12px;
+    padding: 20px 14px 12px;
   }
 
   .ellia-v2-corner-controls {
-    top: 8px;
-    right: 8px;
     gap: 0.35rem;
+    margin-left: 0.35rem;
   }
 
   .ellia-v2-settings-button,
