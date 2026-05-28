@@ -9,7 +9,7 @@
         <button class="ellia-v2-settings-close" type="button" @click="emit('close')">✕</button>
       </div>
 
-      <section v-if="currentView === 'home'" class="ellia-v2-settings-section ellia-v2-settings-section--tickets">
+      <section v-if="currentView === 'home'">
         <div class="ellia-v2-ticket-stage">
           <div class="ellia-v2-ticket-grid">
             <button
@@ -261,12 +261,13 @@ function forwardSetSkill(skillKey: StorySkillKey, mode: SkillMode) {
   padding: 1.05rem 1rem 1.2rem;
   border: 1px solid rgba(155, 89, 182, 0.18);
   border-radius: 4px;
-  background: radial-gradient(circle at 50% 0%, rgba(43, 19, 56, 0.42) 0%, rgba(10, 3, 16, 0.96) 100%);
+
+  background: radial-gradient(circle at 50% 0%, rgba(43, 19, 56, 1) 0%, rgba(10, 3, 16, 1) 100%);
+
   box-shadow:
     0 30px 60px rgba(0, 0, 0, 0.9),
     inset 0 0 60px rgba(202, 164, 93, 0.04);
   overflow: hidden;
-  backdrop-filter: blur(12px);
 }
 
 .ellia-v2-settings-modal::before,
