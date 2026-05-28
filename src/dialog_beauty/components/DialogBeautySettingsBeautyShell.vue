@@ -6,7 +6,7 @@ import type { DialogBeautyUiSettings, FontMode, TypewriterSpeed } from '../types
 const primaryPortraitUrl = 'https://files.catbox.moe/nucxpp.png';
 const fallbackPortraitUrl = 'https://s3.uuu.ovh/2026/05/23/RiLOpGNQ.png';
 
-defineProps<{
+const props = defineProps<{
   uiSettings: DialogBeautyUiSettings;
 }>();
 
@@ -15,9 +15,9 @@ const emit = defineEmits<{
   (event: 'set-font-mode', mode: FontMode): void;
   (event: 'set-animation-enabled', enabled: boolean): void;
   (event: 'set-typewriter-speed', speed: TypewriterSpeed): void;
+  (event: 'set-avatar-mode', enabled: boolean): void;
 }>();
 
-const isCuriousAboutFace = ref(false);
 const activePage = ref<'settings' | 'intro'>('settings');
 const portraitSrc = ref(primaryPortraitUrl);
 
@@ -112,21 +112,21 @@ function handlePortraitError() {
         </div>
 
         <div class="ellia-beauty-settings-group ellia-beauty-face-group">
-          <div class="ellia-beauty-settings-title title-curious">“您难道好奇我的面容？”</div>
+          <div class="ellia-beauty-settings-title title-curious">"您难道好奇我的面容？"</div>
           <div class="ellia-beauty-settings-options">
             <button
               type="button"
               class="ellia-beauty-settings-option"
-              :class="{ 'is-active': isCuriousAboutFace }"
-              @click="isCuriousAboutFace = true"
+              :class="{ 'is-active': props.uiSettings.avatarMode }"
+              @click="emit('set-avatar-mode', true)"
             >
               是
             </button>
             <button
               type="button"
               class="ellia-beauty-settings-option"
-              :class="{ 'is-active': !isCuriousAboutFace }"
-              @click="isCuriousAboutFace = false"
+              :class="{ 'is-active': !props.uiSettings.avatarMode }"
+              @click="emit('set-avatar-mode', false)"
             >
               不是
             </button>

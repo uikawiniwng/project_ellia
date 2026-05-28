@@ -72,6 +72,7 @@
           @set-font-mode="emit('set-font-mode', $event)"
           @set-animation-enabled="emit('set-animation-enabled', $event)"
           @set-typewriter-speed="emit('set-typewriter-speed', $event)"
+          @set-avatar-mode="emit('set-avatar-mode', $event)"
         />
 
         <section v-else class="ellia-v2-ticket-shell" :class="`theme-${activeSection}`">
@@ -178,6 +179,7 @@ const emit = defineEmits<{
   (event: 'update:story-style-diy-draft', value: string): void;
   (event: 'set-animation-enabled', enabled: boolean): void;
   (event: 'set-typewriter-speed', speed: TypewriterSpeed): void;
+  (event: 'set-avatar-mode', enabled: boolean): void;
   (event: 'quick-reply', text: string): void;
 }>();
 

@@ -10,75 +10,112 @@
       :ref="element => setCardRef(card.id, element)"
       class="ellia-v2-container"
       :class="{
+        'is-avatar-mode': uiSettings.avatarMode,
         'is-animating': card.isAnimating,
         'is-replay-ready': card.canReplay,
         'is-offscreen': !card.isVisible,
         'is-settings-open': isSettingsOpen(card.id),
       }"
     >
-      <div class="ellia-v2-magic-circle-layer">
-        <div class="magic-ring r1"></div>
-        <div class="magic-ring r2"></div>
-        <div class="magic-symbol"></div>
-      </div>
-      <div class="ellia-v2-star-dust"></div>
+      <!-- 原有魔法阵样式 -->
+      <template v-if="!uiSettings.avatarMode">
+        <div class="ellia-v2-magic-circle-layer">
+          <div class="magic-ring r1"></div>
+          <div class="magic-ring r2"></div>
+          <div class="magic-symbol"></div>
+        </div>
+        <div class="ellia-v2-star-dust"></div>
 
-      <div
-        class="ellia-v2-card-inner ellia-v2-trigger-surface"
-        @mouseenter="requestPlay(card.id)"
-        @click="activateCard(card.id)"
-      >
-        <div class="ellia-v2-header">
-          <div class="ellia-v2-eye-box">
-            <div class="v2-eye-frame"></div>
-            <div class="v2-eye-ball"></div>
+        <div
+          class="ellia-v2-card-inner ellia-v2-trigger-surface"
+          @mouseenter="requestPlay(card.id)"
+          @click="activateCard(card.id)"
+        >
+          <div class="ellia-v2-header">
+            <div class="ellia-v2-eye-box">
+              <div class="v2-eye-frame"></div>
+              <div class="v2-eye-ball"></div>
+            </div>
+            <div class="ellia-v2-title">
+              <span class="v2-name-cn">{{ card.name }}</span>
+              <span class="v2-name-en">Ellia</span>
+            </div>
+            <div class="ellia-v2-header-line"></div>
+            <div class="ellia-v2-corner-controls">
+              <button
+                v-if="!card.hasPlayed && !card.isAnimating"
+                class="ellia-v2-control-button ellia-v2-play-button"
+                type="button"
+                @click.stop="startCardFromControl(card.id)"
+              >
+                Play
+              </button>
+              <button
+                v-else-if="card.canReplay && !card.isAnimating"
+                class="ellia-v2-control-button ellia-v2-replay-button"
+                type="button"
+                @click.stop="replayCard(card.id)"
+              >
+                ↻
+              </button>
+              <button
+                class="ellia-v2-control-button ellia-v2-settings-button"
+                type="button"
+                :aria-expanded="isSettingsOpen(card.id)"
+                @click.stop="toggleSettings(card.id)"
+              >
+                ✦
+              </button>
+            </div>
           </div>
-          <div class="ellia-v2-title">
-            <span class="v2-name-cn">{{ card.name }}</span>
-            <span class="v2-name-en">Ellia</span>
+
+          <div class="ellia-v2-debug-strip">
+            <span v-for="badge in debugBadges" :key="badge.key" class="ellia-v2-debug-pill">
+              {{ badge.label }}
+            </span>
           </div>
-          <div class="ellia-v2-header-line"></div>
-          <div class="ellia-v2-corner-controls">
-            <button
-              v-if="!card.hasPlayed && !card.isAnimating"
-              class="ellia-v2-control-button ellia-v2-play-button"
-              type="button"
-              @click.stop="startCardFromControl(card.id)"
-            >
-              Play
-            </button>
-            <button
-              v-else-if="card.canReplay && !card.isAnimating"
-              class="ellia-v2-control-button ellia-v2-replay-button"
-              type="button"
-              @click.stop="replayCard(card.id)"
-            >
-              ↻
-            </button>
-            <button
-              class="ellia-v2-control-button ellia-v2-settings-button"
-              type="button"
-              :aria-expanded="isSettingsOpen(card.id)"
-              @click.stop="toggleSettings(card.id)"
-            >
-              ✦
-            </button>
+
+          <div :ref="element => setContentRef(card.id, element)" class="ellia-v2-content text">
+            <div v-for="(line, index) in card.lines" :key="`${card.id}-${line.type}-${index}`" class="ellia-v2-line">
+              <span v-if="line.type === 'action'" class="ellia-v2-action">{{ line.text }}</span>
+              <template v-else>{{ line.text }}</template>
+            </div>
           </div>
         </div>
+      </template>
 
-        <div class="ellia-v2-debug-strip">
-          <span v-for="badge in debugBadges" :key="badge.key" class="ellia-v2-debug-pill">
-            {{ badge.label }}
-          </span>
+      <!-- 带头像的新样式 -->
+      <template v-else>
+        <div class="ellia-v2-trigger-surface" @mouseenter="requestPlay(card.id)" @click="activateCard(card.id)">
+          <DialogBeautyAvatarCard :ref="element => setContentRefFromComponent(card.id, element)" :card="card" />
         </div>
-
-        <div :ref="element => setContentRef(card.id, element)" class="ellia-v2-content text">
-          <div v-for="(line, index) in card.lines" :key="`${card.id}-${line.type}-${index}`" class="ellia-v2-line">
-            <span v-if="line.type === 'action'" class="ellia-v2-action">{{ line.text }}</span>
-            <template v-else>{{ line.text }}</template>
-          </div>
+        <div class="ellia-v2-corner-controls ellia-v2-corner-controls--avatar">
+          <button
+            v-if="!card.hasPlayed && !card.isAnimating"
+            class="ellia-v2-control-button ellia-v2-play-button"
+            type="button"
+            @click.stop="startCardFromControl(card.id)"
+          >
+            Play
+          </button>
+          <button
+            v-else-if="card.canReplay && !card.isAnimating"
+            class="ellia-v2-control-button ellia-v2-replay-button"
+            type="button"
+            @click.stop="replayCard(card.id)"
+          >
+            ↻
+          </button>
+          <button
+            class="ellia-v2-control-button ellia-v2-settings-button"
+            type="button"
+            :aria-expanded="isSettingsOpen(card.id)"
+            @click.stop="toggleSettings(card.id)"
+          >
+            ✦
+          </button>
         </div>
-      </div>
+      </template>
 
       <DialogBeautySettingsPanel
         v-if="isSettingsOpen(card.id)"
@@ -101,6 +138,7 @@
         @update:story-style-diy-draft="storyStyleDiyDraft = $event"
         @set-animation-enabled="setAnimationEnabled"
         @set-typewriter-speed="setTypewriterSpeed"
+        @set-avatar-mode="setAvatarMode"
         @quick-reply="handleQuickReply"
       />
     </div>
@@ -112,6 +150,7 @@ import { gsap } from 'gsap';
 import type { ComponentPublicInstance } from 'vue';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { elliaFormLabels, SETTINGS_SYNC_EVENT } from './constants';
+import DialogBeautyAvatarCard from './components/DialogBeautyAvatarCard.vue';
 import DialogBeautySettingsPanel from './components/DialogBeautySettingsPanel.vue';
 import {
   getDefaultStorySettings,
@@ -191,6 +230,27 @@ function setContentRef(cardId: string, element: Element | ComponentPublicInstanc
   if (element instanceof HTMLElement) {
     contentRefs.set(cardId, element);
     return;
+  }
+
+  contentRefs.delete(cardId);
+}
+
+function setContentRefFromComponent(cardId: string, component: Element | ComponentPublicInstance | null) {
+  if (component && typeof component === 'object' && '$el' in component) {
+    const el = (component as ComponentPublicInstance).$el as HTMLElement | null;
+    const textContainer = el?.querySelector<HTMLElement>('.ellia-avatar-text');
+    if (textContainer) {
+      contentRefs.set(cardId, textContainer);
+      return;
+    }
+  }
+
+  if (component instanceof HTMLElement) {
+    const textContainer = component.querySelector<HTMLElement>('.ellia-avatar-text');
+    if (textContainer) {
+      contentRefs.set(cardId, textContainer);
+      return;
+    }
   }
 
   contentRefs.delete(cardId);
@@ -300,6 +360,10 @@ function saveStoryStyleDiy() {
 
 function setAnimationEnabled(enabled: boolean) {
   uiSettings.value.animationEnabled = enabled;
+}
+
+function setAvatarMode(enabled: boolean) {
+  uiSettings.value.avatarMode = enabled;
 }
 
 function setTypewriterSpeed(speed: TypewriterSpeed) {
@@ -993,5 +1057,32 @@ onBeforeUnmount(() => {
   .ellia-v2-debug-pill {
     font-size: 0.64rem;
   }
+}
+
+/* Avatar mode: 容器在头像模式下简化外观 */
+.ellia-v2-container.is-avatar-mode {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  overflow: visible;
+}
+
+.ellia-v2-container.is-avatar-mode:hover,
+.ellia-v2-container.is-avatar-mode.is-animating,
+.ellia-v2-container.is-avatar-mode.is-settings-open {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ellia-v2-corner-controls--avatar {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
 }
 </style>

@@ -78,6 +78,56 @@ export const STORY_STYLE_MODES: StoryStyleMode[] = [
 ];
 export const TYPEWRITER_SPEEDS: TypewriterSpeed[] = ['disable', 'normal', 'fast'];
 
+export interface MoodAvatarEntry {
+  primaryUrl: string;
+  fallbackUrl: string;
+}
+
+export const DEFAULT_MOOD = 'smile';
+
+export const MOOD_AVATAR_MAP: Record<string, MoodAvatarEntry> = {
+  smile: {
+    primaryUrl: 'https://files.catbox.moe/elgw3w.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/x7qQmRC2.png',
+  },
+  惊讶: {
+    primaryUrl: 'https://files.catbox.moe/5389fr.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/at3AloWb.png',
+  },
+  担心: {
+    primaryUrl: 'https://files.catbox.moe/hom1zr.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/fsXibuf8.png',
+  },
+  温柔: {
+    primaryUrl: 'https://files.catbox.moe/g5fwcu.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/IeRlQkjj.png',
+  },
+  期待: {
+    primaryUrl: 'https://files.catbox.moe/9xjb0c.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/lp95isi7.png',
+  },
+  敌视: {
+    primaryUrl: 'https://files.catbox.moe/88v1i9.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/CqN9I2pC.png',
+  },
+  施愿: {
+    primaryUrl: 'https://files.catbox.moe/r94uy4.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/vkh0HmKm.png',
+  },
+  认真: {
+    primaryUrl: 'https://files.catbox.moe/1av0zv.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/WGqI7ucl.png',
+  },
+  失措: {
+    primaryUrl: 'https://files.catbox.moe/4qqins.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/2ze1Fgrt.png',
+  },
+  愉快: {
+    primaryUrl: 'https://files.catbox.moe/wwch4a.png',
+    fallbackUrl: 'https://s3.bmp.ovh/2026/05/10/oQL8FHeC.png',
+  },
+};
+
 export const GLOBAL_SETTINGS_PATH = 'dialog_beauty.ui';
 export const CHAT_SETTINGS_PATH = 'dialog_beauty.story';
 export const SETTINGS_SYNC_EVENT = 'dialog_beauty_settings_sync';

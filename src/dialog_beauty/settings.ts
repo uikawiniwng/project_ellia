@@ -1,12 +1,11 @@
 import {
+  blueStoryStyleOptions,
   CHAT_SETTINGS_PATH,
   elliaFormLabels,
   elliaFormStatusPath,
   FONT_MODES,
-  formTypeOptions,
   FORM_TYPES,
   GLOBAL_SETTINGS_PATH,
-  blueStoryStyleOptions,
   SKILL_MODES,
   skillOptionGroups,
   STORY_STYLE_MODES,
@@ -45,6 +44,7 @@ export function getDefaultUiSettings(): DialogBeautyUiSettings {
     fontMode: getConfiguredFontMode(),
     animationEnabled: true,
     typewriterSpeed: 'fast',
+    avatarMode: false,
   };
 }
 
@@ -75,6 +75,7 @@ export function normalizeUiSettings(value: unknown): DialogBeautyUiSettings {
     typewriterSpeed: TYPEWRITER_SPEEDS.includes(source.typewriterSpeed as TypewriterSpeed)
       ? (source.typewriterSpeed as TypewriterSpeed)
       : 'fast',
+    avatarMode: source.avatarMode === true,
   };
 }
 

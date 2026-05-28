@@ -53,6 +53,7 @@ export function parseLines(rawText: string): ParsedLine[] {
 export function createElliaCard(attrText: string, rawBody: string, index: number): ElliaCard | null {
   const body = rawBody.replace(/\r/g, '').trim();
   const nameMatch = attrText.match(/\bname=(['"])(.*?)\1/);
+  const moodMatch = attrText.match(/\bmood=(['"])(.*?)\1/);
   const lines = parseLines(body);
 
   if (!lines.length) {
@@ -62,6 +63,7 @@ export function createElliaCard(attrText: string, rawBody: string, index: number
   return {
     id: `ellia-card-${index}`,
     name: nameMatch?.[2]?.trim() || '艾莉亚',
+    mood: moodMatch?.[2]?.trim() || undefined,
     lines,
     hasPlayed: false,
     isAnimating: false,

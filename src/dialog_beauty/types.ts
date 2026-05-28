@@ -6,6 +6,7 @@ export interface ParsedLine {
 export interface ElliaCard {
   id: string;
   name: string;
+  mood?: string;
   lines: ParsedLine[];
   hasPlayed: boolean;
   isAnimating: boolean;
@@ -56,6 +57,7 @@ export interface DialogBeautyUiSettings {
   fontMode: FontMode;
   animationEnabled: boolean;
   typewriterSpeed: TypewriterSpeed;
+  avatarMode: boolean;
 }
 
 export interface DialogBeautyStorySettings {
