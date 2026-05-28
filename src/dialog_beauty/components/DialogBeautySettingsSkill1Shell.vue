@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { quickReplyOptionGroups } from '../constants';
+import { safeGetVariables } from '../settings';
 import type { DialogBeautyStorySettings, SkillMode } from '../types';
 
 const props = defineProps<{
@@ -16,6 +17,14 @@ const emit = defineEmits<{
 const activePage = ref<'settings' | 'detail'>('settings');
 const displayedSkill = ref<SkillMode>(props.storySettings.skill1 || 'A');
 const isTurning = ref(false);
+const playerStats = ref({
+  level: '--',
+  strength: '--',
+  agility: '--',
+  constitution: '--',
+  intelligence: '--',
+  faith: '--',
+});
 
 const skillOptions: Array<{ value: SkillMode; label: string }> = [
   { value: 'A', label: '关闭技能 1' },
@@ -33,7 +42,7 @@ const skillContentMap: Record<SkillMode, { flavor: string; status: string }> = {
     status: '独一无二',
   },
   C: {
-    flavor: '「 拨开大千世界的迷雾 」',
+    flavor: '「 移开大千世界的迷雾 」',
     status: '大千世界的你与我',
   },
 };
@@ -71,7 +80,30 @@ function togglePage() {
   activePage.value = activePage.value === 'settings' ? 'detail' : 'settings';
 }
 
+function formatStatValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return '--';
+  }
+
+  const text = String(value).trim();
+  return text || '--';
+}
+
+function refreshPlayerStats() {
+  const messageVariables = safeGetVariables({ type: 'message', message_id: getCurrentMessageId() } as VariableOption);
+
+  playerStats.value = {
+    level: formatStatValue(_.get(messageVariables, ['stat_data', '主角', '等级'])),
+    strength: formatStatValue(_.get(messageVariables, ['stat_data', '主角', '属性', '力量'])),
+    agility: formatStatValue(_.get(messageVariables, ['stat_data', '主角', '属性', '敏捷'])),
+    constitution: formatStatValue(_.get(messageVariables, ['stat_data', '主角', '属性', '体质'])),
+    intelligence: formatStatValue(_.get(messageVariables, ['stat_data', '主角', '属性', '智力'])),
+    faith: formatStatValue(_.get(messageVariables, ['stat_data', '主角', '属性', '精神'])),
+  };
+}
+
 function replayCurrentSkill() {
+  refreshPlayerStats();
   playFlip(props.storySettings.skill1 || 'A');
 }
 
@@ -166,7 +198,12 @@ onBeforeUnmount(() => {
         <div class="ellia-skill1-detail-title">水晶球</div>
         <div class="ellia-skill1-detail-subtitle">Crystal Orb</div>
 
-        <button type="button" class="ellia-skill1-orb-wrapper" @click="replayCurrentSkill">
+        <button
+          type="button"
+          class="ellia-skill1-orb-wrapper"
+          @mouseenter="refreshPlayerStats"
+          @click="replayCurrentSkill"
+        >
           <svg class="ellia-skill1-svg-orb" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <radialGradient id="ellia-skill1-glass-base" cx="50%" cy="50%" r="50%">
@@ -210,6 +247,21 @@ onBeforeUnmount(() => {
             <circle cx="140" cy="140" r="128" fill="url(#ellia-skill1-mist-grad)" class="ellia-skill1-mist-layer" />
             <ellipse cx="100" cy="70" rx="40" ry="20" fill="rgba(255,255,255,0.15)" transform="rotate(-30 100 70)" />
           </svg>
+
+          <div class="ellia-skill1-orb-stats-overlay">
+            <div class="ellia-skill1-stat-row">
+              <div class="ellia-skill1-stat-item delay-1">等级: {{ playerStats.level }}</div>
+            </div>
+            <div class="ellia-skill1-stat-row">
+              <div class="ellia-skill1-stat-item delay-2">力量: {{ playerStats.strength }}</div>
+              <div class="ellia-skill1-stat-item delay-3">敏捷: {{ playerStats.agility }}</div>
+              <div class="ellia-skill1-stat-item delay-4">体质: {{ playerStats.constitution }}</div>
+            </div>
+            <div class="ellia-skill1-stat-row">
+              <div class="ellia-skill1-stat-item delay-5">智力: {{ playerStats.intelligence }}</div>
+              <div class="ellia-skill1-stat-item delay-6">精神: {{ playerStats.faith }}</div>
+            </div>
+          </div>
         </button>
 
         <div class="ellia-skill1-flip-card-container" :class="{ 'is-turning': isTurning }">
@@ -218,7 +270,8 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="ellia-skill1-ticket-detail-status">
-            当前已启用 <span class="glow-text">{{ displayedSkillContent.status }}</span><br />
+            当前已启用 <span class="glow-text">{{ displayedSkillContent.status }}</span
+            ><br />
             <span class="ellia-skill1-status-note">设定将保存为聊天变量供 EJS 读取</span>
           </div>
         </div>
@@ -230,7 +283,8 @@ onBeforeUnmount(() => {
         <div class="ellia-skill1-intro-greeting">
           “哟！旅伴~找到这里来啦？”<br /><br />
           <span>
-            这里记录的是有关您的自我的能力的唔 介绍？有关于“天分”,也有关于“自己可以变成什么样的人”，当然是二选一的哦，做人不能太贪婪嘛。
+            这里记录的是有关您的自我的能力的唔
+            介绍？有关于“天分”,也有关于“自己可以变成什么样的人”，当然是二选一的哦，做人不能太贪婪嘛。
           </span>
         </div>
 
@@ -510,8 +564,9 @@ onBeforeUnmount(() => {
 .ellia-skill1-orb-wrapper {
   position: relative;
   z-index: 20;
-  width: 200px;
-  height: 200px;
+  flex-shrink: 0;
+  width: 230px;
+  height: 230px;
   margin-bottom: 1.5rem;
   padding: 0;
   border: none;
@@ -547,6 +602,78 @@ onBeforeUnmount(() => {
 
 .ellia-skill1-orb-wrapper:hover .ellia-skill1-mist-layer {
   opacity: 0.1;
+}
+
+.ellia-skill1-orb-stats-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(12, 5, 18, 0.75) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.ellia-skill1-stat-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.ellia-skill1-stat-item {
+  color: #f1dcff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  text-shadow:
+    0 0 6px rgba(155, 89, 182, 0.9),
+    0 0 10px rgba(202, 164, 93, 0.8);
+  transform: translateY(8px);
+  transition:
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s ease;
+  white-space: nowrap;
+}
+
+.ellia-skill1-orb-wrapper:hover .ellia-skill1-orb-stats-overlay {
+  opacity: 1;
+}
+
+.ellia-skill1-orb-wrapper:hover .ellia-skill1-stat-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ellia-skill1-orb-wrapper:hover .delay-1 {
+  transition-delay: 0.05s;
+}
+
+.ellia-skill1-orb-wrapper:hover .delay-2 {
+  transition-delay: 0.1s;
+}
+
+.ellia-skill1-orb-wrapper:hover .delay-3 {
+  transition-delay: 0.15s;
+}
+
+.ellia-skill1-orb-wrapper:hover .delay-4 {
+  transition-delay: 0.2s;
+}
+
+.ellia-skill1-orb-wrapper:hover .delay-5 {
+  transition-delay: 0.25s;
+}
+
+.ellia-skill1-orb-wrapper:hover .delay-6 {
+  transition-delay: 0.3s;
 }
 
 .ellia-skill1-flip-card-container {
@@ -679,6 +806,8 @@ onBeforeUnmount(() => {
 :global(.ellia-v2-root[data-animations-enabled='false'] .ellia-skill1-nav-btn),
 :global(.ellia-v2-root[data-animations-enabled='false'] .ellia-skill1-settings-option),
 :global(.ellia-v2-root[data-animations-enabled='false'] .ellia-skill1-svg-orb),
+:global(.ellia-v2-root[data-animations-enabled='false'] .ellia-skill1-orb-stats-overlay),
+:global(.ellia-v2-root[data-animations-enabled='false'] .ellia-skill1-stat-item),
 :global(.ellia-v2-root[data-animations-enabled='false'] .ellia-skill1-flip-card-container) {
   transition: none !important;
 }
