@@ -69,12 +69,6 @@
             </div>
           </div>
 
-          <div class="ellia-v2-debug-strip">
-            <span v-for="badge in debugBadges" :key="badge.key" class="ellia-v2-debug-pill">
-              {{ badge.label }}
-            </span>
-          </div>
-
           <div :ref="element => setContentRef(card.id, element)" class="ellia-v2-content text">
             <div v-for="(line, index) in card.lines" :key="`${card.id}-${line.type}-${index}`" class="ellia-v2-line">
               <span v-if="line.type === 'action'" class="ellia-v2-action">{{ line.text }}</span>
@@ -148,15 +142,13 @@
 <script setup lang="ts">
 import { gsap } from 'gsap';
 import type { ComponentPublicInstance } from 'vue';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { elliaFormLabels, SETTINGS_SYNC_EVENT } from './constants';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { SETTINGS_SYNC_EVENT } from './constants';
 import DialogBeautyAvatarCard from './components/DialogBeautyAvatarCard.vue';
 import DialogBeautySettingsPanel from './components/DialogBeautySettingsPanel.vue';
 import {
   getDefaultStorySettings,
   getDefaultUiSettings,
-  getSkillLabel,
-  getStoryStyleLabel,
   normalizeCustomStoryStyle,
   readPersistedSettings,
   persistUiSettings,
@@ -199,14 +191,6 @@ const contentRefs = new Map<string, HTMLElement>();
 const cardRefs = new Map<string, HTMLElement>();
 const timelineMap = new Map<string, gsap.core.Timeline>();
 let intersectionObserver: IntersectionObserver | null = null;
-
-const debugBadges = computed(() => [
-  { key: 'type', label: elliaFormLabels[storySettings.value.formType] },
-  { key: 'skill1', label: getSkillLabel('skill1', storySettings.value.skill1) },
-  { key: 'skill2', label: getSkillLabel('skill2', storySettings.value.skill2) },
-  { key: 'skill3', label: getSkillLabel('skill3', storySettings.value.skill3) },
-  { key: 'skill4', label: getStoryStyleLabel(storySettings.value.skill4, storySettings.value.skill4Custom) },
-]);
 
 function handleExternalSettingsSync(payload?: { source?: string; scope?: string; key?: string }) {
   console.info('收到外部 Dialog Beauty 设置同步事件', payload ?? {});
@@ -846,28 +830,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 5px var(--e-main);
 }
 
-.ellia-v2-debug-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.38rem;
-  margin-bottom: 0.55rem;
-}
-
-.ellia-v2-debug-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 1.6rem;
-  padding: 0.1rem 0.52rem;
-  border-radius: 999px;
-  border: 1px solid rgba(224, 176, 255, 0.32);
-  background: rgba(62, 22, 77, 0.82);
-  color: #f1dcff;
-  font-size: 0.68rem;
-  letter-spacing: 0.04em;
-  text-shadow: 0 0 4px rgba(155, 89, 182, 0.45);
-}
-
 .ellia-v2-content {
   color: #eee;
   font-size: 0.95em;
@@ -1054,9 +1016,6 @@ onBeforeUnmount(() => {
     padding: 0 0.72rem;
   }
 
-  .ellia-v2-debug-pill {
-    font-size: 0.64rem;
-  }
 }
 
 /* Avatar mode: 容器在头像模式下简化外观 */
