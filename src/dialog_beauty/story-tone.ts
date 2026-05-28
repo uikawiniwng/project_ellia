@@ -96,7 +96,7 @@ export function insertIntoPromptInput(text: string): boolean {
 
 export function buildStoryToneReminder(tone: string): string {
   const safeTone = tone.replace(/"/g, "'");
-  return `${ROTE_REMINDER_HEADER} 用户已設定自定义故事风格: "${safeTone}"`;
+  return `${ROTE_REMINDER_HEADER} 用户已设定自定义故事风格: "${safeTone}"`;
 }
 
 export function buildStoryToneRequest(tone: string): string {

@@ -57,6 +57,7 @@
           @back="currentView = 'home'"
           @set-form-type="emit('set-form-type', $event)"
           @set-skill="forwardSetSkill"
+          @quick-reply="emit('quick-reply', $event)"
           @set-story-style="emit('set-story-style', $event)"
           @open-story-style-diy="emit('open-story-style-diy')"
           @close-story-style-diy="emit('close-story-style-diy')"

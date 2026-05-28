@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue';
-import { blueStoryStyleOptions, formTypeOptions, skillOptionGroups } from '../constants';
+import { blueStoryStyleOptions, elliaFormLabels, formTypeOptions, skillOptionGroups } from '../constants';
 import { safeGetVariables } from '../settings';
 import type { DialogBeautyStorySettings, FormType, SkillMode, StoryStyleMode } from '../types';
 
@@ -21,6 +21,7 @@ const emit = defineEmits<{
   (event: 'request-story-style-suggestion'): void;
   (event: 'save-story-style-diy'): void;
   (event: 'update:story-style-diy-draft', value: string): void;
+  (event: 'quick-reply', text: string): void;
 }>();
 
 const activePage = ref<'settings' | 'detail'>('settings');
@@ -43,6 +44,15 @@ const isCustomStoryStyleActive = computed(() => props.isStoryStyleDiyOpen || pro
 
 function togglePage() {
   activePage.value = activePage.value === 'settings' ? 'detail' : 'settings';
+}
+
+function setFormTypeWithPrompt(mode: FormType) {
+  const isSwitchingForm = props.storySettings.formType !== mode;
+  emit('set-form-type', mode);
+
+  if (isSwitchingForm) {
+    emit('quick-reply', `让艾莉亚${elliaFormLabels[mode]}`);
+  }
 }
 
 function getRandomAfternoonTeaNews(): string {
@@ -129,7 +139,7 @@ onBeforeUnmount(() => {
             type="button"
             class="ellia-world-settings-option"
             :class="{ 'is-active': storySettings.formType === option.value }"
-            @click="emit('set-form-type', option.value)"
+            @click="setFormTypeWithPrompt(option.value)"
           >
             {{ option.label }}
           </button>
